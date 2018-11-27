@@ -27,7 +27,9 @@ Este trabajo es una implemetación física del estimador de parámetros de páne
 |Zedboard|.|.|.|.|
 
 
-## Acoplamiento y sensado de las señales del PV
+##  Sensado y acondicionamiento de las señales del PV
+
+En esta etapa se sensan las señales de voltaje y corriente del panel solar las cuales son acondicionadas para la lectura del ADC en la Zedboard, se entrega una señal diferencial variante entre -0.5V a 0.5V.
 
 ![Diagrama de bloques de conexión del estimador](https://github.com/RonnyZF/PV_Parameters_estimator/blob/master/Archivos_readme/Top_diagram.jpeg)
 
@@ -36,4 +38,5 @@ Este trabajo es una implemetación física del estimador de parámetros de páne
 Esta sección consta de dos módulos implementados en la Zedboard. Se tiene un primer módulo que muestrea los datos utilizando el ADC de la zedboard, el cual toma muestras de la corriente y el voltaje del panel solar, estos son enviados mediante protocolo AXI-Stream al segundo módulo el cual recibe los datos entregados por el ADC son almancenados en un FIFO para su procesamiendo matemático, la salida de este módulo se tienen los parámetros θ̂1 y θ̂2.
 
 ![Diagrama de bloques IP implementados](https://github.com/RonnyZF/PV_Parameters_estimator/blob/master/Archivos_readme/PV_diagram.jpeg)
+
 ## Interfaz de usuario para lectura de los datos
