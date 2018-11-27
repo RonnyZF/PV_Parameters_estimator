@@ -37,6 +37,6 @@ En esta etapa se sensan las señales de voltaje y corriente del panel solar las 
 
 Esta sección consta de dos módulos implementados en la Zedboard. Se tiene un primer módulo que muestrea los datos utilizando el ADC de la zedboard, el cual toma muestras de la corriente y el voltaje del panel solar, estos son enviados mediante protocolo AXI-Stream al segundo módulo el cual recibe los datos entregados por el ADC son almancenados en un FIFO para su procesamiendo matemático, la salida de este módulo se tienen los parámetros θ̂1 y θ̂2.
 
-![Diagrama de bloques IP implementados](https://github.com/RonnyZF/PV_Parameters_estimator/blob/master/Archivos_readme/PV_diagram.jpeg)
+![Diagrama de bloques IP implementados](https://github.com/RonnyZF/PV_Parameters_estimator/blob/master/Archivos_readme/Diagrama_zedboard.jpeg)
 
 ## Interfaz de usuario para lectura de los datos
