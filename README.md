@@ -6,7 +6,7 @@
 * Alfonso Chacón
 * Kaleb Alfaro
 * Carlos Meza
-# Estimador de parámetros de **PV**
+# Estimador de parámetros para generadores fotovoltaicos **(PV)**.
 
 
 # Introducción:
@@ -16,7 +16,7 @@ Este trabajo es una implementación física del estimador de parámetros de pane
 
 ## Esta implemetación consta de 3 secciones:
 
-* **Acoplamiento y sensado de las señales del PV**
+* **Sensado y acondicionamiento de las señales del PV**
 * **Muestreo y flujo de procesamiento de los datos**
 * **Interfaz de usuario para lectura de los datos**
 
