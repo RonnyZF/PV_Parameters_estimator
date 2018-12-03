@@ -7,9 +7,10 @@ int fill_stream(hls::stream<data_t> &in);
 int main(){
 	hls::stream<data_t> in;
 	hls::stream<param_t> out;
-	//while(out.size() > 0){
+	fill_stream(in);
+	std::cout << "tamaño: " << in.size() << std::endl;
+
 	for (int i=0;i<25;i++){
-		fill_stream(in);
 		estimador(in,out);
 		param_t resultado = out.read();
 		std::cout << "theta_1: " << resultado._1 << "\t theta_2: " << resultado._2 << std::endl;
@@ -18,39 +19,28 @@ int main(){
 }
 
 int fill_stream(hls::stream<data_t> &in){
-	const fixed_32 ALPHA = 0.625;
-	const fixed_32 F_SAMPLING = 1e6;
-	const fixed_32 V_CTE = 16.69;
-	const fixed_32 MM_PI = 3.14159265358979323846;
-	const fixed_32 PVG_F = 1000;
-	const fixed_32 K = 0.3;
-
+	const float ALPHA = 0.625;
+	const float F_SAMPLING = 1e6;
+	const float V_CTE = 16.69;
+	const float MM_PI = 3.14159265358979323846;
+	const float PVG_F = 1000;
+	const float K = 0.3;
+	const float I_G = 5.1387085e-6; //(b=-12.1787)
+	float b=log(I_G);
 
 	data_t samples;
 	samples.adc_i=0;
 	samples.adc_v=0;
-	fixed_32 a=2.9;
-	fixed_32 b=4.5;
-	//in.write(samples);
+	float volt;
+	float current;
 	for (int i=0;i<25;i++){
-		samples.adc_v = V_CTE+K*V_CTE*sin(2*MM_PI*PVG_F*i/F_SAMPLING);
-		samples.adc_i = ALPHA*samples.adc_v +b;
+		volt = V_CTE+K*V_CTE*sin(2*MM_PI*PVG_F*i/F_SAMPLING);
+		current = ALPHA*volt +b;
+		samples.adc_i=current;
+		samples.adc_v=volt;
+		std::cout << "volt: " << samples.adc_v << "\t current: " << samples.adc_i << std::endl;
 		in.write(samples);
 	}
 	return 0;
 }
-/*
-int fill_stream(hls::stream<data_t> &in){
-	data_t samples;
-	samples.adc_i=0;
-	samples.adc_v=0;
-	fixed_32 a=2.9;
-	fixed_32 b=4.5;
-	//in.write(samples);
-	for (int i=0;i<25;i++){
-		samples.adc_v += a;
-		samples.adc_i += b;
-		in.write(samples);
-	}
-	return 0;
-}*/
+
