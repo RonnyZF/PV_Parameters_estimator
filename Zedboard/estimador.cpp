@@ -15,9 +15,13 @@ int estimador(hls::stream<data_t> &in, hls::stream<param_t> &out){
 	//std::cout << "ALPHA: " << theta_v_l._1 << "\t BETA: " << theta_v_l._2 << std::endl;
 
 	aux = -sample_in.adc_v * theta_v_l._1;
+	//std::cout << "1: " << theta_v_l._1 << std::endl;
 	aux += -theta_v_l._2;
+	//std::cout << "2: " << aux << std::endl;
 	aux += sample_in.adc_i;
-	aux /= F_SAMPLING;
+	//std::cout << "3: " << sample_in.adc_i << std::endl;
+	aux /= F_SAMPLING;//-----------------------------------ERROR: no se puede representar el valor de la frecuencia
+	std::cout << "4: " << F_SAMPLING << std::endl;
 	theta._1 = GAMMA11*aux*sample_in.adc_v + theta_v_l._1;
 	theta._2 = GAMMA22*aux*theta_v_l._2;
 	theta_v_l._1=theta._1;
