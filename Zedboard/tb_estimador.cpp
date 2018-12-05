@@ -5,46 +5,49 @@
 
 
 // function prototypes
-int float_samples_generator(hls::stream<data_t> &in, int n);
-int fixed_samples_generator(hls::stream<data_t> &in, int n);
-int float_estimador(hls::stream<data_t> &in, hls::stream<param_t> &out);
+int float_samples_generator(hls::stream<adc_data<float > > &in, int n);
+int fixed_samples_generator(hls::stream<adc_data<fixed_32 > > &in, int n);
+int float_estimador(hls::stream<adc_data<float > > &in, hls::stream<param_t<float > > &out);
 
 int main(){
-	hls::stream<data_t<float>> in_float;
-	hls::stream<data_t<fixed_32>> in_fixed;
-	hls::stream<param_t<float>> out_float;
-	hls::stream<param_t<fixed_32>> out_fixed;
+	hls::stream<adc_data<float > > in_float;
+	hls::stream<adc_data<fixed_32> > in_fixed;
+	hls::stream<param_t<float > > out_float;
+	hls::stream<param_t<fixed_32 > > out_fixed;
 	//std::cout << "tamaño: " << in.size() << std::endl;
 
 	for (int i=0;i<50000;i++){
-		float_samples_generator(in,i);
-		fixed_samples_generator(in,i);
-		float_estimador(in,out);
-		fixed_estimador(in,out);
-		param_t<float> resultado_float = out.read();
-		param_t<fixed_32> resultado_fixed = out.read();
+		float_samples_generator(in_float,i);
+		fixed_samples_generator(in_fixed,i);
+		float_estimador(in_float,out_float);
+		fixed_estimador(in_fixed,out_fixed);
+		param_t<float> resultado_float = out_float.read();
+		param_t<fixed_32> resultado_fixed = out_fixed.read();
 		//calculos de error
 		//...
-		std::cout << "theta_1: " << resultado_float._1 << "\t theta_2: " << resultado_float._2 << std::endl;
-		std::cout << "theta_1: " << resultado_fixed._1 << "\t theta_2: " << resultado_fixed._2 << std::endl;
+		std::cout << "theta_1: " << resultado_float._1 << "\t theta_2: " << resultado_float._2 << "\n";
+		std::cout << "theta_1: " << resultado_fixed._1 << "\t theta_2: " << resultado_fixed._2 << "\n";
 	}
 	return 0;
 }
 // --------------------------------------------------------
-int float_estimador(hls::stream<data_t> &in, hls::stream<param_t> &out){
+int float_estimador(hls::stream<adc_data<float > > &in, hls::stream<param_t<float > > &out){
 
-	t_estimador <float> (hls::stream<data_t> &in, hls::stream<param_t> &out);
+	t_estimador<float>(in,out);
+	return 0;
 }
 // --------------------------------------------------------
-int float_samples_generator(hls::stream<data_t> &in, int n){
+int float_samples_generator(hls::stream<adc_data<float > > &in, int n){
 
-	t_gen_samples<float>(hls::stream<data_t<T>> &in, int n);
+	t_gen_samples<float>(in,n);
+	return 0;
 }
 
 // --------------------------------------------------------
-int fixed_samples_generator(hls::stream<data_t> &in, int n){
+int fixed_samples_generator(hls::stream<adc_data<fixed_32 > > &in, int n){
 
-		t_gen_samples<fixed_32>(hls::stream<data_t<T>> &in, int n):
+	t_gen_samples<fixed_32>(in, n);
+	return 0;
 }
 
 /*

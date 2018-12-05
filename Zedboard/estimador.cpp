@@ -2,11 +2,11 @@
 
 // THIS IS THE TOP LEVEL DESIGN THAT WILL BE SYNTHESIZED
 
-data_t<data_t<fixed_32>>;
 
-int fixed_estimador(hls::stream<data_t<fixed_32>> &in, hls::stream<param_t<fixed_32>> &out){
-
-	t_estimador <fixed_32> (hls::stream<data_t> &in, hls::stream<param_t> &out);
+int fixed_estimador(hls::stream<adc_data<fixed_32 > > &in, hls::stream<param_t<fixed_32 > > &out){
+# pragma HLS DATAFLOW
+	t_estimador<fixed_32 > (in,out);
+	return 0;
 }
 
 
