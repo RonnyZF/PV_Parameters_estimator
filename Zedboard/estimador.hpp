@@ -7,11 +7,6 @@
 
 typedef ap_fixed<32,8,AP_RND,AP_SAT> fixed_32;
 
-// function prototypes
-
-
-
-/* ****************************** C++ TEMPLATES ***************************************/
 // --------------------------------------------------------
 template<typename T>
 struct adc_data{
@@ -24,19 +19,13 @@ struct param_t{
 	T _1;
 	T _2;
 };
-// --------------------------------------------------------
-
-//int estimador(hls::stream<data_t> &in, hls::stream<param_t> &out)
 
 /* ****************************** C++ TEMPLATES ***************************************/
-// --------------------------------------------------------
 
-
-// --------------------------------------------------------
 int fixed_estimador(hls::stream<adc_data<fixed_32 > > &in, hls::stream<param_t<fixed_32 > > &out);
 
 template<typename T>
- int t_estimador(hls::stream<adc_data<T > > &in, hls::stream<param_t<T > > &out){
+ int template_estimador(hls::stream<adc_data<T > > &in, hls::stream<param_t<T > > &out){
  	const T GAMMA11 = (0.1);
  	const T GAMMA22 = (100);
  	const T INIT_ALPHA = 0.55;
@@ -62,7 +51,7 @@ template<typename T>
 
 // --------------------------------------------------------
 template<typename T>
-int t_gen_samples(hls::stream< adc_data<T > > &in, int n){
+int template_samples_generator(hls::stream< adc_data<T > > &in, int n){
 	const float ALPHA = 0.625;
 	const float F_SAMPLING = 1e6;
 	const float V_CTE = 16.69;
