@@ -1,50 +1,31 @@
 #include "log_calc.hpp"
- 
+
+fixed_32 mapVariable(fixed_32 noMapped){
+	return (noMapped-1)/(noMapped+1);
+}
+
+fixed_32 approxLog(fixed_32 mapped){
+	fixed_32 A[] =
+	{0.935484,0.931035,0.925926,0.920000,
+	 0.913043,0.904762,0.894737,0.882353,
+	 0.866667,0.846154,0.818182,0.777778,
+	 0.714286,0.600000,0.333333};
+	fixed_32 K = mapped*mapped;
+	fixed_32 aux=K*A[0] + 1;
+	for(int stageIdx=1;stageIdx<15;stageIdx++){
+		aux=aux*A[stageIdx]*K + 1;
+	}
+	return aux*mapped*2;
+}
+
 int fixed_log(hls::stream<ADC_data> &in, hls::stream<log_data> &out){
-	
+#pragma HLS DATAFLOW
 	ADC_data sample_in;
 	log_data sample_out;
-	in.read(sample_in);
-	fixed_32 x = (sample_in.adc_i-1)/(sample_in.adc_i+1);//56 ciclos
-
-	fixed_32 K = x*x;
-
-	fixed_32 A = 0.935484; //29/31
-	fixed_32 aux=K*A + 1;
-	A = 0.931035; //27/29
-	aux=aux*A*K + 1;
-	A = 0.925926; //25/27
-	aux=aux*A*K + 1;
-	A = 0.920000; //23/25
-	aux=aux*A*K + 1;
-	A = 0.913043; //21/23
-	aux=aux*A*K + 1;
-	A = 0.904762; //19/21
-	aux=aux*A*K + 1;
-	A = 0.894737; //17/19
-	aux=aux*A*K + 1;
-	A = 0.882353; //15/17
-	aux=aux*A*K + 1;
-	A = 0.866667; //13/15
-	aux=aux*A*K + 1;
-	A = 0.846154; //11/13
-	aux=aux*A*K + 1;
-	A = 0.818182; //9/11
-	aux=aux*A*K + 1;
-	A = 0.777778; //7/9
-	aux=aux*A*K + 1;
-	A = 0.714286; //5/7
-	aux=aux*A*K + 1;
-	A = 0.600000; //3/5
-	aux=aux*A*K + 1;
-	A = 0.333333; //1/3
-	aux=aux*A*K + 1;
-
-	aux = aux*x*2;
-
+	sample_in=in.read();
+	fixed_32 mapped = mapVariable(sample_in.adc_i);//56 ciclos
+	sample_out.log = approxLog(mapped);
 	sample_out.adc_v = sample_in.adc_v;
-	sample_out.log = aux;
-	
 	out.write(sample_out);
 	return 0;
 }
