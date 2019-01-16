@@ -1,12 +1,11 @@
 #include <hls_stream.h>
 #include <hls_math.h>
 #include "ap_fixed.h"
-#include <stdio.h>
-#include <stdlib.h>
-#include <math.h>
-#include <stdint.h>
 
  typedef ap_fixed<32,14,AP_RND,AP_SAT> fixed_32;
+
+ typedef ap_fixed<32,14,AP_RND,AP_SAT> fixed_ln_taylor_series;
+
  
  struct ADC_data{
 	fixed_32 adc_v;
@@ -19,4 +18,4 @@
 };
  typedef struct ADC_data data_t;
  
- int fixed_log(hls::stream<ADC_data> &in, hls::stream<log_data> &out);
+ int Ln_taylor_series(hls::stream<ADC_data> &in, hls::stream<log_data> &out);
