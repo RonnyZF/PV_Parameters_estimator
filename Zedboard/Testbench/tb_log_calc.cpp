@@ -1,6 +1,5 @@
 #include <iostream>
-#include <hls_stream.h>
-#include "log_calc.hpp"
+#include "../Library/Ln_taylor_series.hpp"
 
 
 int gen_samples(hls::stream<ADC_data> &in);
@@ -11,7 +10,7 @@ int main(){
 	gen_samples(in);
 	float a = 0.02;
 	for (int i=1;i<500;i++){
-		fixed_log(in,out);
+		Ln_taylor_series(in,out);
 		float comp = log(a);
 		log_data resultado = out.read();
 		//calculos de error
