@@ -30,7 +30,7 @@ struct log_data{
 /* ****************************** C++ TEMPLATES ***************************************/
 
 int fixed_estimador(hls::stream<data_vector<est_precision > > &in, hls::stream<param_t<est_precision > > &out);
-int fixed_log(hls::stream<data_vector<est_precision > > &in, hls::stream<log_data<est_precision > > &out);
+
 
 template<typename T>
  int template_estimador(hls::stream<data_vector<T > > &in, hls::stream<param_t<T > > &out){
