@@ -1,12 +1,8 @@
+#include "Ln_using_log2.hpp"
+#include "Ln_using_log2_templates.cpp"
 
-#include "log_calc.hpp"
 
-struct Scaling{
-	fixed_32 x;
-	fixed_32 y;
- };
-
-int fixed_log(hls::stream<ADC_data<fixed_32 >> &in, hls::stream<log_data<fixed_32 >> &out){
-	template_fixed_log<Scaling,fixed_32>(in,out);
+int fixed_log(hls::stream<data_vector<log_precision> > &in, hls::stream<log_data<log_precision> > &out){
+	fixed_log_calculation<data_vector<log_precision >,log_precision>(in,out);
 	return 0;
 }
