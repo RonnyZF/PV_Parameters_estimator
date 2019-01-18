@@ -1,4 +1,5 @@
 #include "estimador.hpp"
+#include "../Library/Ln_using_log2_templates.cpp"
 
 // THIS IS THE TOP LEVEL DESIGN THAT WILL BE SYNTHESIZED
 
