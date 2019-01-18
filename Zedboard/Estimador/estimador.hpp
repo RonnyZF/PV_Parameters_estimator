@@ -141,7 +141,6 @@ int template_fixed_log(hls::stream<data_vector<T> > &in, hls::stream<log_data<T>
 	data_vector<T> sample_in;
 	log_data<T> sample_out;
 	sample_in=in.read();
-	std::cout<<"adc_i: "<<sample_in._i<<std::endl;
 	P aux = template_escalamiento<P,T>(sample_in._i);
 	T aux2 = template_approxLog2<T>(aux._v,aux._i);
 	sample_out.log = template_approxLn<T>(aux2);
@@ -164,5 +163,25 @@ int template_adc_to_real_value(hls::stream<data_vector<T > > &in, hls::stream<da
 	T aux = Ig-sample_in._i;
 	sample_in._i = (Ig>=sample_in._i) ?aux: min_current;
 	out.write(sample_in);
+	return 0;
+}
+
+template<typename type_in, typename type_out>
+int template_precision_change_vector_to_vector(hls::stream<data_vector<type_in > > &in, hls::stream<data_vector<type_out > > &out){
+	data_vector<type_in> sample_in_log=in.read();
+	data_vector<type_out> aux = {0,0};
+	aux._v=sample_in_log._v;
+	aux._i=sample_in_log._i;
+	out.write(aux);
+	return 0;
+}
+
+template<typename type_in, typename type_out>
+int template_precision_change_log_to_vector(hls::stream<log_data<type_in > > &in, hls::stream<data_vector<type_out > > &out){
+	log_data<type_in> sample_in_log=in.read();
+	data_vector<type_out> aux = {0,0};
+	aux._v=sample_in_log.adc_v;
+	aux._i=sample_in_log.log;
+	out.write(aux);
 	return 0;
 }
