@@ -33,7 +33,7 @@ int fixed_estimador(hls::stream<data_vector<est_precision > > &in, hls::stream<p
 
 
 template<typename T>
- int template_estimador(hls::stream<data_vector<T > > &in, hls::stream<param_t<T > > &out){
+ int parameters_estimador(hls::stream<data_vector<T > > &in, hls::stream<param_t<T > > &out){
  	const T GAMMA11 = (0.1);
  	const T GAMMA22 = (100);
  	const T INIT_ALPHA = 0.55;
@@ -49,8 +49,12 @@ template<typename T>
 	aux += -theta_v_l._2;
 	aux += sample_in._i;
 
-	theta._1 = (GAMMA11*aux*sample_in._v)*T_SAMPLING + theta_v_l._1;
-	theta._2 = (GAMMA22*aux)*T_SAMPLING+theta_v_l._2;
+	param_t<T> tuple_for_operations={GAMMA11*aux,GAMMA22*aux};
+	tuple_for_operations._1*=sample_in._v;
+
+	theta._1 = tuple_for_operations._1*T_SAMPLING + theta_v_l._1;
+	theta._2 = tuple_for_operations._2*T_SAMPLING + theta_v_l._2;
+
 	theta_v_l._1=theta._1;
 	theta_v_l._2=theta._2;
 	out.write(theta);
@@ -59,7 +63,7 @@ template<typename T>
 
 // --------------------------------------------------------
 template<typename T>
-int template_samples_generator(hls::stream< data_vector<T > > &in, int n){
+int samples_generator(hls::stream< data_vector<T > > &in, int n){
 	const float ALPHA = 0.625;
 	const float F_SAMPLING = 1e6;
 	const float V_CTE = 16.69;
@@ -79,7 +83,7 @@ int template_samples_generator(hls::stream< data_vector<T > > &in, int n){
 	current = ALPHA*volt +b;
 
 
-	samples._i=(current<1) ?current*-1: current;
+	samples._i= current;//(current<1) ?current*-1: current;
 	samples._v=volt;
 	i=n;
 
@@ -136,7 +140,7 @@ T template_approxLog2(T x, T y){
 
 // --------------------------------------------------------
 template<typename P, typename T>
-int template_fixed_log(hls::stream<data_vector<T> > &in, hls::stream<log_data<T> > &out){
+int fixed_log_calculation(hls::stream<data_vector<T> > &in, hls::stream<log_data<T> > &out){
 #pragma HLS DATAFLOW
 	data_vector<T> sample_in;
 	log_data<T> sample_out;
@@ -151,7 +155,7 @@ int template_fixed_log(hls::stream<data_vector<T> > &in, hls::stream<log_data<T>
 
 // --------------------------------------------------------
 template<typename T>
-int template_adc_to_real_value(hls::stream<data_vector<T > > &in, hls::stream<data_vector<T > > &out){
+int adc_to_real_value(hls::stream<data_vector<T > > &in, hls::stream<data_vector<T > > &out){
 	const T I_scale_factor = 1;
 	const T V_scale_factor = 1;
 	const T Ig = 10;
@@ -167,7 +171,7 @@ int template_adc_to_real_value(hls::stream<data_vector<T > > &in, hls::stream<da
 }
 
 template<typename type_in, typename type_out>
-int template_precision_change_vector_to_vector(hls::stream<data_vector<type_in > > &in, hls::stream<data_vector<type_out > > &out){
+int precision_change_vector_to_vector(hls::stream<data_vector<type_in > > &in, hls::stream<data_vector<type_out > > &out){
 	data_vector<type_in> sample_in_log=in.read();
 	data_vector<type_out> aux = {0,0};
 	aux._v=sample_in_log._v;
@@ -177,7 +181,7 @@ int template_precision_change_vector_to_vector(hls::stream<data_vector<type_in >
 }
 
 template<typename type_in, typename type_out>
-int template_precision_change_log_to_vector(hls::stream<log_data<type_in > > &in, hls::stream<data_vector<type_out > > &out){
+int precision_change_log_to_vector(hls::stream<log_data<type_in > > &in, hls::stream<data_vector<type_out > > &out){
 	log_data<type_in> sample_in_log=in.read();
 	data_vector<type_out> aux = {0,0};
 	aux._v=sample_in_log.adc_v;

@@ -20,7 +20,7 @@ int main(){
 	float theta_1_float=0;
 	float theta_2_float=0;
 
-	for (int i=0;i<50;i++){
+	for (int i=0;i<1000;i++){
 		float_samples_generator(in_float,i);
 		fixed_samples_generator(in_fixed,i);
 		float_estimador(in_float,out_float);
@@ -49,28 +49,28 @@ int float_estimador(hls::stream<data_vector<float > > &in, hls::stream<param_t<f
 	hls::stream<log_data<float> > out_log;
 	hls::stream<data_vector<float> > in_est;
 
-	template_adc_to_real_value<float>(in,out_real);
+	adc_to_real_value<float>(in,out_real);
 
-	template_precision_change_vector_to_vector<float,float>(out_real,in_log);
+	precision_change_vector_to_vector<float,float>(out_real,in_log);
 
-	template_fixed_log<data_vector<float>,float>(in_log,out_log);
+	fixed_log_calculation<data_vector<float>,float>(in_log,out_log);
 
-	template_precision_change_log_to_vector<float,float>(out_log,in_est);
+	precision_change_log_to_vector<float,float>(out_log,in_est);
 
-	template_estimador<float > (in_est,out);
+	parameters_estimador<float > (in_est,out);
 	return 0;
 }
 // --------------------------------------------------------
 int float_samples_generator(hls::stream<data_vector<float > > &in, int n){
 
-	template_samples_generator<float>(in,n);
+	samples_generator<float>(in,n);
 	return 0;
 }
 
 // --------------------------------------------------------
 int fixed_samples_generator(hls::stream<data_vector<est_precision > > &in, int n){
 
-	template_samples_generator<est_precision>(in, n);
+	samples_generator<est_precision>(in, n);
 	return 0;
 }
 

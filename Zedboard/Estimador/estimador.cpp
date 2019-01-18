@@ -10,15 +10,17 @@ int fixed_estimador(hls::stream<data_vector<est_precision > > &in, hls::stream<p
 	hls::stream<log_data<log_precision> > out_log;
 	hls::stream<data_vector<est_precision> > in_est;
 
-	template_adc_to_real_value<est_precision>(in,out_real);
+	// Stage 1 - ADC samples to V/A units
+	adc_to_real_value<est_precision>(in,out_real);
+	// Stage 2 - Precision change for logarithm calculation
+	precision_change_vector_to_vector<est_precision,log_precision>(out_real,in_log);
+	// Stage 3 - Logarithm calculation
+	fixed_log_calculation<data_vector<est_precision>,log_precision>(in_log,out_log);
+	// Stage 4 - Precision change for estimator
+	precision_change_log_to_vector<log_precision,est_precision>(out_log,in_est);
+	// Stage 5 - Parameters estimator
+	parameters_estimador<est_precision > (in_est,out);
 
-	template_precision_change_vector_to_vector<est_precision,log_precision>(out_real,in_log);
-
-	template_fixed_log<data_vector<est_precision>,log_precision>(in_log,out_log);
-
-	template_precision_change_log_to_vector<log_precision,est_precision>(out_log,in_est);
-
-	template_estimador<est_precision > (in_est,out);
 	return 0;
 }
 
