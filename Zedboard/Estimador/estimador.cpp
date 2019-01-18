@@ -3,38 +3,41 @@
 // THIS IS THE TOP LEVEL DESIGN THAT WILL BE SYNTHESIZED
 
 
-int fixed_estimador(hls::stream<adc_data<fixed_32 > > &in, hls::stream<param_t<fixed_32 > > &out){
+
+int fixed_estimador(hls::stream<data_vector<est_precision > > &in, hls::stream<param_t<est_precision > > &out){
 # pragma HLS DATAFLOW
-	hls::stream<adc_data<fixed_log_pres> > in_log;
-	adc_data<fixed_32> sample_in_log=in.read();
-	adc_data<fixed_log_pres> aux = {0,0};
-	aux.adc_v=sample_in_log.adc_v;
-	aux.adc_i=sample_in_log.adc_i;
+
+	hls::stream<data_vector<est_precision> > out_real;
+
+	template_adc_to_real_value<est_precision>(in,out_real);
+
+	hls::stream<data_vector<log_precision> > in_log;
+	data_vector<est_precision> sample_in_log=out_real.read();
+	data_vector<log_precision> aux = {0,0};
+	aux._v=sample_in_log._v;
+	aux._i=sample_in_log._i;
 	in_log.write(aux);
-	std::cout<<"aux_v="<<aux.adc_v<< " in_log_v="<<sample_in_log.adc_v<<std::endl;
-	std::cout<<"aux_i="<<aux.adc_i<< " in_log_i="<<sample_in_log.adc_i<<std::endl;
+	std::cout<<"aux_v="<<aux._v<< " in_log_v="<<sample_in_log._v<<std::endl;
+	std::cout<<"aux_i="<<aux._i<< " in_log_i="<<sample_in_log._i<<std::endl;
 
 
-	hls::stream<log_data<fixed_log_pres> > out_log;
+	hls::stream<log_data<log_precision> > out_log;
 
-	template_fixed_log<Scaling,fixed_log_pres>(in_log,out_log);
+	template_fixed_log<data_vector<est_precision>,log_precision>(in_log,out_log);
 
-	hls::stream<adc_data<fixed_32> > in_est;
+	hls::stream<data_vector<est_precision> > in_est;
 
-	log_data<fixed_log_pres> sample_in_est=out_log.read();
+	log_data<log_precision> sample_in_est=out_log.read();
 	std::cout<<"sample_in_est_v="<<sample_in_est.adc_v<<std::endl;
 	std::cout<<"sample_in_est_i="<<sample_in_est.log<<std::endl;
-	adc_data<fixed_32> aux2;
-	aux2.adc_v=sample_in_est.adc_v;
-	aux2.adc_i=sample_in_est.log;
+	data_vector<est_precision> aux2;
+	aux2._v=sample_in_est.adc_v;
+	aux2._i=sample_in_est.log;
 	in_est.write(aux2);
 
-	template_estimador<fixed_32 > (in_est,out);
+	template_estimador<est_precision > (in_est,out);
 	return 0;
 }
-
-
-
 
 
 
