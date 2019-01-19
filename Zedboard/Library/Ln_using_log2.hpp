@@ -21,4 +21,4 @@ template<typename T>
 };
 
  
- int fixed_log(hls::stream<data_vector<log_precision >> &in, hls::stream<log_data<log_precision >> &out);
+ int fixed_log(hls::stream<data_vector<log_precision > > &in, hls::stream<log_data<log_precision > > &out);
