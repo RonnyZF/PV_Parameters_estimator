@@ -1,5 +1,5 @@
 #include <iostream>
-#include "../Library/Ln_taylor_series.cpp"
+#include "../Library/Ln_taylor_series.hpp"
 
 
 int gen_samples(hls::stream<data_vector<log_precision> > &in);
@@ -10,7 +10,7 @@ int main(){
 	gen_samples(in);
 	float a = 0.02;
 	for (int i=1;i<500;i++){
-		Ln_taylor_series(in,out);
+		Fixed_ln_taylor_series(in,out);
 		float comp = log(a);
 		log_data<log_precision> resultado = out.read();
 		//calculos de error

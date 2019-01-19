@@ -20,4 +20,4 @@
  	T log;
  };
  
- int Ln_taylor_series(hls::stream<data_vector<log_precision> > &in, hls::stream<log_data<log_precision> > &out);
+ int Fixed_ln_taylor_series(hls::stream<data_vector<log_precision> > &in, hls::stream<log_data<log_precision> > &out);
