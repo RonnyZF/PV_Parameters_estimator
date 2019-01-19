@@ -1,4 +1,3 @@
-
  template<typename T>
  T approxLn(T log2_result){
  	const T log2_e=1.442695041;
@@ -43,7 +42,7 @@
  }
 
  template<typename P, typename T>
- int fixed_log_calculation(hls::stream<data_vector<T>> &in, hls::stream<log_data<T>> &out){
+ int fixed_log_calculation(hls::stream<data_vector<T> > &in, hls::stream<log_data<T> > &out){
  #pragma HLS DATAFLOW
  	data_vector<T> sample_in;
  	log_data<T> sample_out;

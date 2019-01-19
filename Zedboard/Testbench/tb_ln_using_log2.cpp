@@ -1,5 +1,5 @@
 #include <iostream>
-#include "Ln_using_log2.hpp"
+#include "../Library/Ln_using_log2.hpp"
 
 
 int gen_samples(hls::stream<data_vector<log_precision >> &in);
