@@ -16,8 +16,8 @@ int main(){
 		//calculos de error
 		float log_float = resultado.log;
 		float error = ((log_float-comp)/comp);
-		//std::cout << "log("<<resultado.adc_v<<"): \t Resultado obtenido: "<< resultado.log << "\t esperado: " << comp << "\t %error: "<<error<<std::endl;
-		std::cout << a<<","<<resultado.log << "," << comp<<std::endl;
+		std::cout << "log("<<resultado.adc_v<<"): \t Resultado obtenido: "<< resultado.log << "\t esperado: " << comp << "\t %error: "<<error<<std::endl;
+		//std::cout << a<<","<<resultado.log << "," << comp<<std::endl;
 		a=a+0.02;
 	}
 	return 0;
