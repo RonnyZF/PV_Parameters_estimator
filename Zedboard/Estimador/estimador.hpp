@@ -29,11 +29,11 @@ struct log_data{
 
 /* ****************************** C++ TEMPLATES ***************************************/
 
-int fixed_estimador(hls::stream<data_vector<est_precision > > &in, hls::stream<param_t<est_precision > > &out);
+int fixed_estimator(hls::stream<data_vector<est_precision > > &in, hls::stream<param_t<est_precision > > &out);
 
 
 template<typename T>
- int parameters_estimador(hls::stream<data_vector<T > > &in, hls::stream<param_t<T > > &out){
+ int parameters_estimator(hls::stream<data_vector<T > > &in, hls::stream<param_t<T > > &out){
  	const T GAMMA11 = (0.1);
  	const T GAMMA22 = (100);
  	const T INIT_ALPHA = 0.55;

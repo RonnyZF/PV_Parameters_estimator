@@ -1,13 +1,14 @@
 #include <iostream>
 #include <hls_stream.h>
 #include <hls_math.h>
-#include "estimador.hpp"
+#include "../Estimador/estimador.hpp"
+#include "../Library/Ln_using_log2_templates.cpp"
 
 
 // function prototypes
 int float_samples_generator(hls::stream<data_vector<float > > &in, int n);
 int fixed_samples_generator(hls::stream<data_vector<est_precision > > &in, int n);
-int float_estimador(hls::stream<data_vector<float > > &in, hls::stream<param_t<float > > &out);
+int float_estimator(hls::stream<data_vector<float > > &in, hls::stream<param_t<float > > &out);
 
 int main(){
 	hls::stream<data_vector<float > > in_float;
@@ -23,8 +24,8 @@ int main(){
 	for (int i=0;i<1000;i++){
 		float_samples_generator(in_float,i);
 		fixed_samples_generator(in_fixed,i);
-		float_estimador(in_float,out_float);
-		fixed_estimador(in_fixed,out_fixed);
+		float_estimator(in_float,out_float);
+		fixed_estimator(in_fixed,out_fixed);
 
 		param_t<float> result_float = out_float.read();
 		param_t<est_precision> result_fixed = out_fixed.read();
@@ -42,7 +43,7 @@ int main(){
 	return 0;
 }
 // --------------------------------------------------------
-int float_estimador(hls::stream<data_vector<float > > &in, hls::stream<param_t<float > > &out){
+int float_estimator(hls::stream<data_vector<float > > &in, hls::stream<param_t<float > > &out){
 
 	hls::stream<data_vector<float> > out_real;
 	hls::stream<data_vector<float> > in_log;
@@ -57,7 +58,7 @@ int float_estimador(hls::stream<data_vector<float > > &in, hls::stream<param_t<f
 
 	precision_change_log_to_vector<float,float>(out_log,in_est);
 
-	parameters_estimador<float > (in_est,out);
+	parameters_estimator<float > (in_est,out);
 	return 0;
 }
 // --------------------------------------------------------

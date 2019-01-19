@@ -3,7 +3,7 @@
 
 // THIS IS THE TOP LEVEL DESIGN THAT WILL BE SYNTHESIZED
 
-int fixed_estimador(hls::stream<data_vector<est_precision > > &in, hls::stream<param_t<est_precision > > &out){
+int fixed_estimator(hls::stream<data_vector<est_precision > > &in, hls::stream<param_t<est_precision > > &out){
 # pragma HLS DATAFLOW
 
 	hls::stream<data_vector<est_precision> > out_real;
@@ -20,7 +20,7 @@ int fixed_estimador(hls::stream<data_vector<est_precision > > &in, hls::stream<p
 	// Stage 4 - Precision change for estimator
 	precision_change_log_to_vector<log_precision,est_precision>(out_log,in_est);
 	// Stage 5 - Parameters estimator
-	parameters_estimador<est_precision > (in_est,out);
+	parameters_estimator<est_precision > (in_est,out);
 
 	return 0;
 }
