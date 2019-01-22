@@ -1,9 +1,7 @@
 #include <hls_stream.h>
-#include "ap_fixed.h"
-#include <stdio.h>
-#include <stdlib.h>
-#include <math.h>
+#include <ap_fixed.h>
 #include <stdint.h>
+#include "../Library/xadc_stream.hpp"
 
 typedef ap_fixed<32,8,AP_RND,AP_SAT> est_precision;
 typedef ap_fixed<32,14,AP_RND,AP_SAT> log_precision;
