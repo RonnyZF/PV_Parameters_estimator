@@ -29,7 +29,7 @@ Este trabajo es una implementación física del estimador de parámetros de pane
 
 ##  Sensado y acondicionamiento de las señales del PV
 
-En esta etapa se sensan las señales de voltaje y corriente del panel solar las cuales son acondicionadas para la lectura del ADC en la Zedboard, se entrega una señal diferencial variante entre -0.5V a 0.5V.
+En esta etapa se censan las señales de voltaje y corriente del panel solar las cuales son acondicionadas para la lectura del ADC en la Zedboard, se entrega una señal diferencial variante entre -0.5V a 0.5V.
 
 ![Diagrama de bloques de conexión del estimador](https://github.com/RonnyZF/PV_Parameters_estimator/blob/master/Archivos_readme/Diagrama_cas.jpeg)
 
