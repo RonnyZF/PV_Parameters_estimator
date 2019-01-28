@@ -9,6 +9,6 @@ Se implementa un módulo para el muestreo de dos señales analógicas utilizando
 ## Módulo HLS Estimador
 ### Estimación de los parámetros θ̂1 y θ̂2
 
-Para la estimación de los parámetros θ̂1 y θ̂2 se reciben los datos provenientes del XADC mediante AXI4-Stream en una interfaz FIFO, seguidamente son separados en dos colas para los correspondientes valores de voltaje y corriente, dichos valores son convertidos nuevamente a los valores iniciales censados directamente del panel, para la señal de corriente se aplica una operación de logaritmo, que es necesaria para que luego dichos pares de valores sean computados en el estimador, a la salida del estimador se tiene los parámetros los cuales se pueden leer mediante AXI$-Lite
+Para la estimación de los parámetros θ̂1 y θ̂2 se reciben los datos provenientes del XADC mediante AXI4-Stream en una interfaz FIFO, seguidamente son separados en dos colas para los correspondientes valores de voltaje y corriente, dichos valores son convertidos nuevamente a los valores iniciales censados directamente del panel, para la señal de corriente se aplica una operación de logaritmo, que es necesaria para que luego dichos pares de valores sean computados en el estimador, a la salida del estimador se tiene los parámetros los cuales se pueden leer mediante AXI4-Lite
 
 ![Flujo de datos módulo estimador](https://github.com/RonnyZF/PV_Parameters_estimator/blob/master/Archivos_readme/hls_ip.jpeg)
