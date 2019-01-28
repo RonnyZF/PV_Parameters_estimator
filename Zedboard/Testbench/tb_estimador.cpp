@@ -9,12 +9,15 @@
 int float_samples_generator(hls::stream<data_vector<float > > &in, int n);
 int fixed_samples_generator(hls::stream<data_vector<est_precision > > &in, int n);
 int float_estimator(hls::stream<data_vector<float > > &in, hls::stream<param_t<float > > &out);
+int xadc_interface_adapter(hls::stream<data_vector<est_precision > > &in,hls::stream<xadc_stream_interface> &seq_in_xadc);
 
 int main(){
 	hls::stream<data_vector<float > > in_float;
 	hls::stream<data_vector<est_precision> > in_fixed;
 	hls::stream<param_t<float > > out_float;
 	hls::stream<param_t<est_precision > > out_fixed;
+	hls::stream<xadc_stream_interface> seq_in_xadc;
+	param_t<est_precision> interface_param_apprx;
 
 	float error_theta_1=0;
 	float error_theta_2=0;
@@ -22,10 +25,15 @@ int main(){
 	float theta_2_float=0;
 
 	for (int i=0;i<1000;i++){
+// SW reference
 		float_samples_generator(in_float,i);
-		fixed_samples_generator(in_fixed,i);
 		float_estimator(in_float,out_float);
-		fixed_estimator(in_fixed,out_fixed);
+// HW reference
+		fixed_samples_generator(in_fixed,i);
+		//fixed_estimator(in_fixed,out_fixed);
+		xadc_interface_adapter(in_fixed,seq_in_xadc);
+		wrapper_fixed_estimator(seq_in_xadc,interface_param_apprx);
+		out_fixed.write(interface_param_apprx);
 
 		param_t<float> result_float = out_float.read();
 		param_t<est_precision> result_fixed = out_fixed.read();
@@ -70,8 +78,24 @@ int float_samples_generator(hls::stream<data_vector<float > > &in, int n){
 
 // --------------------------------------------------------
 int fixed_samples_generator(hls::stream<data_vector<est_precision > > &in, int n){
-
 	samples_generator<est_precision>(in, n);
+	return 0;
+}
+
+int xadc_interface_adapter(
+			hls::stream<data_vector<est_precision > > &in,
+			hls::stream<xadc_stream_interface> &seq_in_xadc
+){
+	xadc_stream_interface xadc_stream;
+	data_vector<est_precision> holder_vector = in.read();
+	// voltage channel
+	xadc_stream.tid = XADC_CHANNEL_1_ID;
+	xadc_stream.tdata = holder_vector._v;
+	seq_in_xadc.write(xadc_stream);
+	// current channel
+	xadc_stream.tid = XADC_CHANNEL_2_ID;
+	xadc_stream.tdata = holder_vector._i;
+	seq_in_xadc.write(xadc_stream);
 	return 0;
 }
 

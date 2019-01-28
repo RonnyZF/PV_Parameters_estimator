@@ -7,6 +7,6 @@ typedef struct xadc_stream_interface{
 	int8_t tid;
 } xadc_stream_interface;
 
-#define XADC_CHANNEL_1_ID 1
+#define XADC_CHANNEL_1_ID (0x3)
 
-#define XADC_CHANNEL_2_ID 8
+#define XADC_CHANNEL_2_ID (0x10)

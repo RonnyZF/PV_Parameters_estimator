@@ -4,7 +4,7 @@
 #include "../Library/xadc_stream.hpp"
 
 typedef ap_fixed<32,8,AP_RND,AP_SAT> est_precision;
-typedef ap_fixed<32,14,AP_RND,AP_SAT> log_precision;
+typedef ap_fixed<14,14,AP_RND,AP_SAT> log_precision;
 
 // --------------------------------------------------------
 template<typename T>
@@ -28,7 +28,7 @@ struct log_data{
 /* ****************************** C++ TEMPLATES ***************************************/
 
 int fixed_estimator(hls::stream<data_vector<est_precision > > &in, hls::stream<param_t<est_precision > > &out);
-
+int wrapper_fixed_estimator(hls::stream<xadc_stream_interface> &seq_in_xadc,param_t<est_precision> &interface_param_apprx);
 
 template<typename T>
  int parameters_estimator(hls::stream<data_vector<T > > &in, hls::stream<param_t<T > > &out){
