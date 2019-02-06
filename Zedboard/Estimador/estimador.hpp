@@ -4,7 +4,7 @@
 #include "../Library/xadc_stream.hpp"
 
 typedef ap_fixed<32,8,AP_RND,AP_SAT> est_precision;
-typedef ap_fixed<14,14,AP_RND,AP_SAT> log_precision;
+typedef ap_fixed<18,7,AP_RND,AP_SAT> log_precision;
 
 // --------------------------------------------------------
 template<typename T>
