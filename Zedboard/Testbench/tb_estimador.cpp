@@ -19,6 +19,10 @@ int main(){
 	hls::stream<xadc_stream_interface> seq_in_xadc;
 	param_t<est_precision> interface_param_apprx;
 
+	est_precision I_scale_factor=1;
+	est_precision V_scale_factor=1;
+	est_precision Ig=10;
+
 	float error_theta_1=0;
 	float error_theta_2=0;
 	float theta_1_float=0;
@@ -32,7 +36,7 @@ int main(){
 		fixed_samples_generator(in_fixed,i);
 		//fixed_estimator(in_fixed,out_fixed);
 		xadc_interface_adapter(in_fixed,seq_in_xadc);
-		wrapper_fixed_estimator(seq_in_xadc,interface_param_apprx);
+		wrapper_fixed_estimator(seq_in_xadc,interface_param_apprx,I_scale_factor,V_scale_factor,Ig);
 		out_fixed.write(interface_param_apprx);
 
 		param_t<float> result_float = out_float.read();

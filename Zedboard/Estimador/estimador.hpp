@@ -28,7 +28,8 @@ struct log_data{
 /* ****************************** C++ TEMPLATES ***************************************/
 
 int fixed_estimator(hls::stream<data_vector<est_precision > > &in, hls::stream<param_t<est_precision > > &out);
-int wrapper_fixed_estimator(hls::stream<xadc_stream_interface> &seq_in_xadc,param_t<est_precision> &interface_param_apprx);
+int wrapper_fixed_estimator(hls::stream<xadc_stream_interface> &seq_in_xadc,param_t<est_precision> &interface_param_apprx,
+		est_precision I_scale_factor, est_precision V_scale_factor, est_precision Ig);
 
 template<typename T>
  int parameters_estimator(hls::stream<data_vector<T > > &in, hls::stream<param_t<T > > &out){
@@ -91,10 +92,10 @@ int samples_generator(hls::stream< data_vector<T > > &in, int n){
 
 // --------------------------------------------------------
 template<typename T>
-int adc_to_real_value(hls::stream<data_vector<T > > &in, hls::stream<data_vector<T > > &out){
-	const T I_scale_factor = 1;
-	const T V_scale_factor = 1;
-	const T Ig = 10;
+int adc_to_real_value(hls::stream<data_vector<T > > &in, hls::stream<data_vector<T > > &out, T I_scale_factor = 1, T V_scale_factor = 1, T Ig = 10){
+	//const T I_scale_factor = 1;
+	//const T V_scale_factor = 1;
+	//const T Ig = 10;
 	const T min_current = 0.002;
 
 	data_vector<T> sample_in=in.read();
