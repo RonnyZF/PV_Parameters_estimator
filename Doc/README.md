@@ -8,7 +8,7 @@
 
 - Abra vivado hls con
 
-      <span style="color:blue">source</span>  /opt/Xilinx/Vivado/2017.4/settings64.sh &&  vivado_hls
+      source /opt/Xilinx/Vivado/2017.4/settings64.sh &&  vivado_hls
 
     Si tiene instalada otra versión de vivado debe cambiarla en el path por su versión correspondiente, sin embargo se recomienda usar dicha versión debido a cambios en la implementación de la función estimador (mayor uso de DSP) si se realiza en una versión anterior de vivado_hls.
 
