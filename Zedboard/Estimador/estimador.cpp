@@ -50,6 +50,7 @@ int wrapper_fixed_estimator(
 			hls::stream<xadc_stream_interface> &seq_in_xadc, param_t<est_precision> &interface_param_apprx,
 			est_precision I_scale_factor, est_precision V_scale_factor, est_precision Ig){
 
+# pragma HLS INTERFACE ap_ctrl_chain port=return
 # pragma HLS INTERFACE axis register port=seq_in_xadc
 # pragma HLS INTERFACE s_axilite register port=I_scale_factor
 # pragma HLS INTERFACE s_axilite register port=V_scale_factor

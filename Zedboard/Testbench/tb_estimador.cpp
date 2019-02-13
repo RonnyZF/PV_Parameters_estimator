@@ -10,6 +10,7 @@ int float_samples_generator(hls::stream<data_vector<float > > &in, int n);
 int fixed_samples_generator(hls::stream<data_vector<est_precision > > &in, int n);
 int float_estimator(hls::stream<data_vector<float > > &in, hls::stream<param_t<float > > &out);
 int xadc_interface_adapter(hls::stream<data_vector<est_precision > > &in,hls::stream<xadc_stream_interface> &seq_in_xadc);
+int reference_log(hls::stream<data_vector<float> > &in, hls::stream<log_data<float> > &out);
 
 int main(){
 	hls::stream<data_vector<float > > in_float;
@@ -66,13 +67,23 @@ int float_estimator(hls::stream<data_vector<float > > &in, hls::stream<param_t<f
 
 	precision_change_vector_to_vector<float,float>(out_real,in_log);
 
-	fixed_log_calculation<data_vector<float>,float>(in_log,out_log);
+	reference_log(in_log,out_log);
 
 	precision_change_log_to_vector<float,float>(out_log,in_est);
 
 	parameters_estimator<float > (in_est,out);
 	return 0;
 }
+// --------------------------------------------------------
+int reference_log(hls::stream<data_vector<float> > &in, hls::stream<log_data<float> > &out){
+ 	data_vector<float> sample_in;
+ 	log_data<float> sample_out;
+ 	sample_in=in.read();
+ 	sample_out.log = (float) log(sample_in._i);
+ 	sample_out.adc_v = sample_in._v;
+ 	out.write(sample_out);
+ 	return 0;
+ }
 // --------------------------------------------------------
 int float_samples_generator(hls::stream<data_vector<float > > &in, int n){
 
