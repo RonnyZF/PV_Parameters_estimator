@@ -4,6 +4,7 @@
 
 int gen_samples(hls::stream<data_vector<log_precision >> &in);
 
+
 int main(){
 	hls::stream<data_vector<log_precision >> in;
 	hls::stream<log_data<log_precision >> out;

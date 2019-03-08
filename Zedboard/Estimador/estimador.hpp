@@ -25,18 +25,24 @@ struct log_data{
 	T log;
 };
 
-/* ****************************** C++ TEMPLATES ***************************************/
+/******************************** C++ TEMPLATES ***************************************/
 
 int fixed_estimator(hls::stream<data_vector<est_precision > > &in, hls::stream<param_t<est_precision > > &out);
 int wrapper_fixed_estimator(hls::stream<xadc_stream_interface> &seq_in_xadc,param_t<est_precision> &interface_param_apprx,
-		est_precision I_scale_factor, est_precision V_scale_factor, est_precision Ig);
+			est_precision I_scale_factor,est_precision V_scale_factor,est_precision Ig,
+			est_precision GAMMA11,est_precision GAMMA12,est_precision GAMMA21,est_precision GAMMA22,
+			est_precision INIT_ALPHA, est_precision INIT_BETA);
 
 template<typename T>
- int parameters_estimator(hls::stream<data_vector<T > > &in, hls::stream<param_t<T > > &out){
- 	const T GAMMA11 = (0.1);
- 	const T GAMMA22 = (100);
- 	const T INIT_ALPHA = 0.55;
- 	const T INIT_BETA = -13.0;
+ int parameters_estimator(hls::stream<data_vector<T > > &in,
+		 	 	 	 	  hls::stream<param_t<T > > &out,
+						  T GAMMA11 = 0.1,
+						  T GAMMA12 =0,
+						  T GAMMA21 =0,
+						  T GAMMA22 = 100,
+						  T INIT_ALPHA = 0.55,
+						  T INIT_BETA = -13.0){
+#pragma HLS DATAFLOW
  	const T T_SAMPLING = 1e-6;
 
  	data_vector<T> sample_in=in.read(); // read fifo sample
@@ -48,8 +54,12 @@ template<typename T>
 	aux += -theta_v_l._2;
 	aux += sample_in._i;
 
-	param_t<T> tuple_for_operations={GAMMA11*aux,GAMMA22*aux};
-	tuple_for_operations._1*=sample_in._v;
+	param_t<T> tuple_for_operations={GAMMA11*sample_in._v,GAMMA21*sample_in._v};
+	tuple_for_operations._1+=GAMMA12;
+	tuple_for_operations._2+=GAMMA22;
+
+	tuple_for_operations._1*=aux;
+	tuple_for_operations._2*=aux;
 
 	theta._1 = tuple_for_operations._1*T_SAMPLING + theta_v_l._1;
 	theta._2 = tuple_for_operations._2*T_SAMPLING + theta_v_l._2;
@@ -81,7 +91,6 @@ int samples_generator(hls::stream< data_vector<T > > &in, int n){
 	volt = V_CTE+K*V_CTE*sin(2*MM_PI*PVG_F*i/F_SAMPLING);
 	current = ALPHA*volt +b;
 
-
 	samples._i= current;//(current<1) ?current*-1: current;
 	samples._v=volt;
 	i=n;
@@ -93,9 +102,7 @@ int samples_generator(hls::stream< data_vector<T > > &in, int n){
 // --------------------------------------------------------
 template<typename T>
 int adc_to_real_value(hls::stream<data_vector<T > > &in, hls::stream<data_vector<T > > &out, T I_scale_factor = 1, T V_scale_factor = 1, T Ig = 10){
-	//const T I_scale_factor = 1;
-	//const T V_scale_factor = 1;
-	//const T Ig = 10;
+
 	const T min_current = 0.002;
 
 	data_vector<T> sample_in=in.read();
