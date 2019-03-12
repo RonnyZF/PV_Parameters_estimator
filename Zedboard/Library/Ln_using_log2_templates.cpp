@@ -46,11 +46,13 @@
  #pragma HLS DATAFLOW
  	data_vector<T> sample_in;
  	log_data<T> sample_out;
+
  	sample_in=in.read();
+ 	sample_out.adc_v = sample_in._v;
  	P aux = escalamiento<P,T>(sample_in._i);
  	T aux2 = approxLog2<T>(aux._v,aux._i);
  	sample_out.log = approxLn<T>(aux2);
- 	sample_out.adc_v = sample_in._v;
+
  	out.write(sample_out);
  	return 0;
  }

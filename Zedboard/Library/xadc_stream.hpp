@@ -4,7 +4,7 @@
 
 typedef struct xadc_stream_interface{
 	ap_fixed<16,1,AP_RND,AP_SAT> tdata;
-	int8_t tid;
+	ap_uint<5> tid;
 } xadc_stream_interface;
 
 #define XADC_CHANNEL_1_ID (0x3)

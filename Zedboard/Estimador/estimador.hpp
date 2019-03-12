@@ -50,7 +50,7 @@ template<typename T>
  	static param_t<T> theta_v_l = {INIT_ALPHA,INIT_BETA}; // init past theta register
  	T aux = 0.0;
 
-	aux = -sample_in._v * theta_v_l._1;
+	aux = -sample_in._v * theta_v_l._1;//Complemento a dos, corregir
 	aux += -theta_v_l._2;
 	aux += sample_in._i;
 
