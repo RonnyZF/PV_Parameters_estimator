@@ -101,7 +101,11 @@ int samples_generator(hls::stream< data_vector<T > > &in, int n){
 
 // --------------------------------------------------------
 template<typename T>
-int adc_to_real_value(hls::stream<data_vector<T > > &in, hls::stream<data_vector<T > > &out, T I_scale_factor = 1, T V_scale_factor = 1, T Ig = 10){
+int adc_to_real_value(hls::stream<data_vector<T > > &in,
+					  hls::stream<data_vector<T > > &out,
+					  T I_scale_factor = 1,
+					  T V_scale_factor = 1,
+					  T Ig = 10){
 
 	const T min_current = 0.002;
 
