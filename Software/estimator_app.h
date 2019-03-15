@@ -10,11 +10,6 @@
 #include"xil_io.h"
 #include"xwrapper_fixed_estimator.h"
 
-#ifndef SRC_ESTIMATOR_APP_H_
-#define SRC_ESTIMATOR_APP_H_
-
-#endif /* SRC_ESTIMATOR_APP_H_ */
-
 
 #define INT2U32(x) *(u32*)&x
 
