@@ -5,7 +5,7 @@
  *      Author: Ronny Zárate Ferreto
  */
 
-#include"estimator_app.h"
+#include"monitor.h"
 
 
 #define AP_DONE 0x1
@@ -21,8 +21,8 @@ int main(void){
 
 	uint32_t gpio_mask = (AP_START|AP_CONTINUE);
 
-	uint32_t param_1;
-	uint32_t param_2;
+	uint32_t param_1=0;
+	uint32_t param_2=0;
 
 	double init_alpha = 9227468.8;  //0.55 x 2^24
 	double init_beta = -218103808;	//-13 x 2^24
@@ -34,7 +34,7 @@ int main(void){
 	double i_scale_f = 16777216;	//1 x 2^24
 	double v_scale_f = 16777216;	//1 x 2^24
 
-
+	XWrapper_fixed_estimator_Initialize(&estimator,XPAR_WRAPPER_FIXED_ESTIMATOR_0_DEVICE_ID);
 	XGpio_Initialize(&Igpio, XPAR_AXI_GPIO_0_DEVICE_ID);
 	XGpio_DiscreteWrite(&Igpio, XPAR_AXI_GPIO_0_DEVICE_ID, gpio_mask);
 
@@ -62,4 +62,3 @@ int main(void){
 	return 0;
 
 }
-
