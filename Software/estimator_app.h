@@ -11,5 +11,10 @@
 #include"xwrapper_fixed_estimator.h"
 
 
-#define INT2U32(x) *(u32*)&x
+#define AP_DONE 0x1
+#define AP_START 0x2
+#define AP_READY 0x4
+#define AP_IDLE 0x8
+#define AP_CONTINUE 0x10
 
+#define INT2U32(x) *(u32*)&x

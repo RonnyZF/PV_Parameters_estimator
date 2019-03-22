@@ -69,7 +69,7 @@ int wrapper_fixed_estimator(
 			est_precision INIT_ALPHA,
 			est_precision INIT_BETA){
 
-# pragma HLS INTERFACE ap_ctrl_chain port=return
+//# pragma HLS INTERFACE ap_ctrl_chain port=return register
 # pragma HLS INTERFACE axis register port=seq_in_xadc
 # pragma HLS INTERFACE s_axilite register port=I_scale_factor
 # pragma HLS INTERFACE s_axilite register port=V_scale_factor
