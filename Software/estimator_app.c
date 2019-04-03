@@ -1,60 +1,47 @@
 /*
- * estimado_app.c
+ * prueba_xadc.c
  *
- *  Created on: 14 mar. 2019
- *      Author: Ronny Zárate Ferreto
+ *  Created on: 31 mar. 2019
+ *      Author: thor
  */
 
-#include"monitor.h"
+#include<stdio.h>
+#include <unistd.h>
+#include<time.h>
+#include <math.h>
+#include"xparameters.h"
+#include"xgpio.h"
+#include"estimador_app.h"
 
 
 int main(void){
 
-	XWrapper_fixed_estimator estimator;
-	XGpio Igpio;
+	XGpio Igpio_0;
+	XGpio Igpio_1;
 
-	uint32_t gpio_mask = (AP_START|AP_CONTINUE);
+	XGpio_Initialize(&Igpio_0, XPAR_AXI_GPIO_0_DEVICE_ID);
+	XGpio_Initialize(&Igpio_1, XPAR_AXI_GPIO_1_DEVICE_ID);
 
-	printf("Mask: %lu\n",gpio_mask);
+	double param_1=0;
+	double param_2=0;
 
-	uint32_t param_1=0;
-	uint32_t param_2=0;
-
-	double init_alpha = 9227468.8;  //0.55 x 2^24
-	double init_beta = -218103808;	//-13 x 2^24
-	double gamma11 = 1677721.6;		//0.1 x 2^24
-	double gamma12 = 0;				//0 x 2^24
-	double gamma21 = 0;				//0 x 2^24
-	double gamma22 = 1677721600;	//100 x 2^24
-	double ig = 167772160;			//10 x 2^24
-	double i_scale_f = 16777216;	//1 x 2^24
-	double v_scale_f = 16777216;	//1 x 2^24
-
-	XWrapper_fixed_estimator_Initialize(&estimator,XPAR_WRAPPER_FIXED_ESTIMATOR_0_DEVICE_ID);
-	XGpio_Initialize(&Igpio, XPAR_AXI_GPIO_0_DEVICE_ID);
-	XGpio_DiscreteWrite(&Igpio, 1, gpio_mask);
-
-	//set initial values
-	XWrapper_fixed_estimator_Set_INIT_ALPHA_V(&estimator, INT2U32(init_alpha));
-	XWrapper_fixed_estimator_Set_INIT_BETA_V(&estimator, INT2U32(init_beta));
-	XWrapper_fixed_estimator_Set_GAMMA11_V(&estimator, INT2U32(gamma11));
-	XWrapper_fixed_estimator_Set_GAMMA12_V(&estimator, INT2U32(gamma12));
-	XWrapper_fixed_estimator_Set_GAMMA21_V(&estimator, INT2U32(gamma21));
-	XWrapper_fixed_estimator_Set_GAMMA22_V(&estimator, INT2U32(gamma22));
-	XWrapper_fixed_estimator_Set_Ig_V(&estimator, INT2U32(ig));
-	XWrapper_fixed_estimator_Set_I_scale_factor_V(&estimator, INT2U32(i_scale_f));
-	XWrapper_fixed_estimator_Set_V_scale_factor_V(&estimator, INT2U32(v_scale_f));
-
-
-	printf("Test project\n\r");
-	for(int i=0;i<10;i++){
-	param_1 = XWrapper_fixed_estimator_Get_interface_param_apprx_1_V_vld(&estimator);
-	param_2 = XWrapper_fixed_estimator_Get_interface_param_apprx_2_V_vld(&estimator);
-	printf("Parameter 1 = %lu\t Parameter 2 = %lu\n\r",param_1,param_2);
+	printf("Inicia prueba");
+	int f = 0;
+	double a=0,b=7,q=0,w=0;
+	while(f==0){
+		param_1 = (double)XGpio_DiscreteRead(&Igpio_1,1)/pow(2,24);
+		param_2 = (double)XGpio_DiscreteRead(&Igpio_1,2)/pow(2,24);
+		printf("Parameter 1 = %lf\t Parameter 2 = %lf\n\r",param_1,param_2);
+		
+		q = pow(2.0,a);
+		w = pow(2.0,b);
+		XGpio_DiscreteWrite(&Igpio_0, 1, q+w);
+		q=0;w=0;a++;b--;
+		usleep(100000);
+		XGpio_DiscreteWrite(&Igpio_0, 1, 0);
+		if(a==7){a=0;b=7;}
 	}
 
-	printf("test done\n");
 
-	return 0;
 
 }
