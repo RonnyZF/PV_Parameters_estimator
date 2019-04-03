@@ -35,7 +35,7 @@ module tb_estimador_solo();
     reg [4:0] seq_in_xadc_0_tid;
     wire seq_in_xadc_0_tready;
     reg seq_in_xadc_0_tvalid;
-    
+
     reg [4:0]ch1;
     reg [4:0]ch2;
     int sel=0;
@@ -55,7 +55,7 @@ module tb_estimador_solo();
         .seq_in_xadc_0_tready(seq_in_xadc_0_tready),
         .seq_in_xadc_0_tvalid(seq_in_xadc_0_tvalid)
         );
-    
+
     task reset();
         rst=0;
         repeat(10) @(posedge clk);
@@ -65,7 +65,7 @@ module tb_estimador_solo();
         seq_in_xadc_0_tid=5'd0;
         seq_in_xadc_0_tvalid=1'd0;
     endtask    
-    
+
     task send_samples_v(input logic [15:0] data);
         sel=1;
         seq_in_xadc_0_tid=5'h10;
@@ -73,7 +73,7 @@ module tb_estimador_solo();
         repeat(20) @(posedge clk);
         seq_in_xadc_0_tvalid=0;
     endtask
-    
+
     task send_samples_i(input logic [15:0] data);
         sel=0;
         seq_in_xadc_0_tid=5'h18;
@@ -81,25 +81,22 @@ module tb_estimador_solo();
         repeat(20) @(posedge clk);
         seq_in_xadc_0_tvalid=0;
     endtask
-        
+
     initial begin
         clk=1;
     end
-    
+
     always #5 clk=~clk;    
-    
+
     initial begin
         reset();
-        
-        for(int i=0;i<100;i++) begin
-            repeat(100) @(posedge clk);
-            end
-            seq_in_xadc_0_tdata+=1;
-            if(sel==0)begin
-                send_samples_v(seq_in_xadc_0_tdata);
-            end
-            else if(sel==1)begin
-                send_samples_i(seq_in_xadc_0_tdata);
-            end
+
+        repeat(100)
+        begin 
+        repeat(50) @(posedge clk);
+        seq_in_xadc_0_tdata+=1;
+        send_samples_v(seq_in_xadc_0_tdata);                                  
+        send_samples_i(seq_in_xadc_0_tdata);
         end
+    end
 endmodule
