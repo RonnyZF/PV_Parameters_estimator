@@ -25,16 +25,7 @@ int pop_xadc_stream(hls::stream<xadc_stream_interface> &seq_in_xadc,
 }
 
 int fixed_estimator(hls::stream<data_vector<est_precision > > &vector_in,
-					hls::stream<param_t<est_precision > > &out,
-					est_precision I_scale_factor,
-					est_precision V_scale_factor,
-					est_precision Ig,
-					est_precision GAMMA11,
-					est_precision GAMMA12,
-					est_precision GAMMA21,
-					est_precision GAMMA22,
-					est_precision INIT_ALPHA,
-					est_precision INIT_BETA){
+					hls::stream<param_t<est_precision > > &out){
 
 # pragma HLS DATAFLOW
 
@@ -44,7 +35,7 @@ int fixed_estimator(hls::stream<data_vector<est_precision > > &vector_in,
 	hls::stream<data_vector<est_precision> > in_est;
 
 	// Stage 1 - ADC samples to V/A units
-	adc_to_real_value<est_precision>(vector_in,out_real,I_scale_factor,V_scale_factor, Ig);
+	adc_to_real_value<est_precision>(vector_in,out_real);
 	// Stage 2 - Precision change for logarithm calculation
 	precision_change_vector_to_vector<est_precision,log_precision>(out_real,in_log);
 	// Stage 3 - Logarithm calculation
@@ -52,42 +43,27 @@ int fixed_estimator(hls::stream<data_vector<est_precision > > &vector_in,
 	// Stage 4 - Precision change for estimator
 	precision_change_log_to_vector<log_precision,est_precision>(out_log,in_est);
 	// Stage 5 - Parameters estimator
-	parameters_estimator<est_precision > (in_est,out,GAMMA11,GAMMA12,GAMMA21,GAMMA22,INIT_ALPHA,INIT_BETA);
+	parameters_estimator<est_precision > (in_est,out);
 	return 0;
 }
 
 int wrapper_fixed_estimator(
 			hls::stream<xadc_stream_interface> &seq_in_xadc,
-			param_t<est_precision> &interface_param_apprx,
-			est_precision I_scale_factor,
-			est_precision V_scale_factor,
-			est_precision Ig,
-			est_precision GAMMA11,
-			est_precision GAMMA12,
-			est_precision GAMMA21,
-			est_precision GAMMA22,
-			est_precision INIT_ALPHA,
-			est_precision INIT_BETA){
+			param_t<est_precision> &interface_param_apprx)
+			{
 
-//# pragma HLS INTERFACE ap_ctrl_chain port=return register
-# pragma HLS INTERFACE axis register port=seq_in_xadc
-# pragma HLS INTERFACE s_axilite register port=I_scale_factor
-# pragma HLS INTERFACE s_axilite register port=V_scale_factor
-# pragma HLS INTERFACE s_axilite register port=Ig
-# pragma HLS INTERFACE s_axilite register port=GAMMA11
-# pragma HLS INTERFACE s_axilite register port=GAMMA12
-# pragma HLS INTERFACE s_axilite register port=GAMMA21
-# pragma HLS INTERFACE s_axilite register port=GAMMA22
-# pragma HLS INTERFACE s_axilite register port=INIT_ALPHA
-# pragma HLS INTERFACE s_axilite register port=INIT_BETA
-# pragma HLS INTERFACE s_axilite port=interface_param_apprx
+# pragma HLS INTERFACE ap_ctrl_hs port=return
+#pragma HLS INTERFACE axis register port=seq_in_xadc
+# pragma HLS INTERFACE ap_none port=interface_param_apprx //salida por gpio
 # pragma HLS DATAFLOW
 
 	hls::stream<data_vector<est_precision > > vector_in;
 	hls::stream<param_t<est_precision > > vector_out;
 	pop_xadc_stream(seq_in_xadc,vector_in);
-	fixed_estimator(vector_in,vector_out,I_scale_factor,V_scale_factor,Ig,GAMMA11,GAMMA12,GAMMA21,GAMMA22,INIT_ALPHA,INIT_BETA);
+	fixed_estimator(vector_in,vector_out);
 	interface_param_apprx=vector_out.read();
+//	interface_param_apprx._1=13.1; para prueba de lectura gpio
+//	interface_param_apprx._2=0.5; para prueba de lectura gpio
 
 	return 0;
 }

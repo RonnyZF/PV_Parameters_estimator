@@ -1,10 +1,11 @@
 #include <hls_stream.h>
 #include <ap_fixed.h>
+#include <hls_math.h>
 #include <stdint.h>
 #include "../Library/xadc_stream.hpp"
 
-typedef ap_fixed<32,8,AP_RND,AP_SAT> est_precision;
-typedef ap_fixed<18,7,AP_RND,AP_SAT> log_precision;
+typedef ap_fixed<32,8> est_precision;
+typedef ap_fixed<18,7> log_precision;
 
 // --------------------------------------------------------
 template<typename T>
@@ -28,21 +29,17 @@ struct log_data{
 /******************************** C++ TEMPLATES ***************************************/
 
 int fixed_estimator(hls::stream<data_vector<est_precision > > &in, hls::stream<param_t<est_precision > > &out);
-int wrapper_fixed_estimator(hls::stream<xadc_stream_interface> &seq_in_xadc,param_t<est_precision> &interface_param_apprx,
-			est_precision I_scale_factor,est_precision V_scale_factor,est_precision Ig,
-			est_precision GAMMA11,est_precision GAMMA12,est_precision GAMMA21,est_precision GAMMA22,
-			est_precision INIT_ALPHA, est_precision INIT_BETA);
+int wrapper_fixed_estimator(hls::stream<xadc_stream_interface> &seq_in_xadc,param_t<est_precision> &interface_param_apprx);
 
 template<typename T>
- int parameters_estimator(hls::stream<data_vector<T > > &in,
-		 	 	 	 	  hls::stream<param_t<T > > &out,
-						  T GAMMA11 = 0.1,
-						  T GAMMA12 =0,
-						  T GAMMA21 =0,
-						  T GAMMA22 = 100,
-						  T INIT_ALPHA = 0.55,
-						  T INIT_BETA = -13.0){
+ int parameters_estimator(hls::stream<data_vector<T > > &in,hls::stream<param_t<T > > &out){
 #pragma HLS DATAFLOW
+ 	const T GAMMA11 = (0.1);
+ 	const T GAMMA12 = (100);
+ 	const T GAMMA21 = (100);
+ 	const T GAMMA22 = (100);
+ 	const T INIT_ALPHA = 0.55;
+ 	const T INIT_BETA = -13.0;
  	const T T_SAMPLING = 1e-6;
 
  	data_vector<T> sample_in=in.read(); // read fifo sample
@@ -102,11 +99,11 @@ int samples_generator(hls::stream< data_vector<T > > &in, int n){
 // --------------------------------------------------------
 template<typename T>
 int adc_to_real_value(hls::stream<data_vector<T > > &in,
-					  hls::stream<data_vector<T > > &out,
-					  T I_scale_factor = 1,
-					  T V_scale_factor = 1,
-					  T Ig = 10){
-
+					  hls::stream<data_vector<T > > &out
+					  ){
+	const T I_scale_factor = 1;
+	const T V_scale_factor = 1;
+	const T Ig = 10;
 	const T min_current = 0.002;
 
 	data_vector<T> sample_in=in.read();
