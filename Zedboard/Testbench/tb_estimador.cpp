@@ -28,7 +28,7 @@ int main(){
 	float theta_1_float=0;
 	float theta_2_float=0;
 
-	for (int i=0;i<1000;i++){
+	for (int i=0;i<10;i++){
 // SW reference
 		float_samples_generator(in_float,i);
 		float_estimator(in_float,out_float);

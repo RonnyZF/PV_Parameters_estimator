@@ -1,11 +1,13 @@
  template<typename T>
  T approxLn(T log2_result){
+#pragma hls inline
  	const T log2_e=1.442695041;
  	return log2_result/log2_e;
  }
 
  template<typename P, typename T>
  P escalamiento(T x){
+#pragma hls inline
  	T y = 0;
  	bool not_finished_scaling = true;
  	while (not_finished_scaling){
@@ -29,6 +31,7 @@
 
  template<typename T>
  T approxLog2(T x, T y){
+#pragma hls inline
  	T b=0.5;
  		for (int i = 0; i < 15; ++i){
  			x=x*x;
@@ -43,7 +46,7 @@
 
  template<typename P, typename T>
  int fixed_log_calculation(hls::stream<data_vector<T> > &in, hls::stream<log_data<T> > &out){
- #pragma HLS DATAFLOW
+
  	data_vector<T> sample_in;
  	log_data<T> sample_out;
 
