@@ -22,6 +22,12 @@ int main(){
 	est_precision I_scale_factor=1;
 	est_precision V_scale_factor=1;
 	est_precision Ig=10;
+	est_precision GAMMA11=0.1;
+	est_precision GAMMA12=0;
+	est_precision GAMMA21=0;
+	est_precision GAMMA22=100;
+	est_precision INIT_ALPHA = 0.55;
+	est_precision INIT_BETA = -13.0;
 
 	float error_theta_1=0;
 	float error_theta_2=0;
@@ -36,7 +42,7 @@ int main(){
 		fixed_samples_generator(in_fixed,i);
 		//fixed_estimator(in_fixed,out_fixed);
 		xadc_interface_adapter(in_fixed,seq_in_xadc);
-		wrapper_fixed_estimator(seq_in_xadc,interface_param_apprx);
+		wrapper_fixed_estimator(seq_in_xadc,interface_param_apprx,I_scale_factor,V_scale_factor,Ig,GAMMA11,GAMMA12,GAMMA21,GAMMA22,INIT_ALPHA,INIT_BETA);
 		out_fixed.write(interface_param_apprx);
 
 		param_t<float> result_float = out_float.read();

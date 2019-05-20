@@ -78,7 +78,6 @@ int wrapper_fixed_estimator(
 #pragma HLS INTERFACE s_axilite register port=INIT_ALPHA
 #pragma HLS INTERFACE s_axilite register port=INIT_BETA
 #pragma HLS INTERFACE s_axilite port=interface_param_apprx
-//#pragma HLS INTERFACE ap_none port=interface_param_apprx //salida por gpio
 #pragma HLS dataflow
 
 	static hls::stream<data_vector<est_precision > > vector_in;
@@ -88,8 +87,7 @@ int wrapper_fixed_estimator(
 	fixed_estimator(vector_in,vector_out,I_scale_factor,V_scale_factor,Ig,GAMMA11,GAMMA12,GAMMA21,GAMMA22,INIT_ALPHA,INIT_BETA);
 	vector_out.read(result);
 	interface_param_apprx=result;
-//	interface_param_apprx._1=13.1; para prueba de lectura gpio
-//	interface_param_apprx._2=0.5; para prueba de lectura gpio
+
 
 	return 0;
 }
