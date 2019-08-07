@@ -55,8 +55,8 @@ int main(){
 		error_theta_1 = ((theta_1_float-result_float._1)/result_float._1);
 		error_theta_2 = ((theta_2_float-result_float._2)/result_float._2);
 		//...
-		//std::cout << "theta 1 obtained: " << result_fixed._1 << "\t expected: " << result_float._1 << "\t % error: " << error_theta_1 << "\n";
-		//std::cout << "theta 2 obtained: " << result_fixed._2 << "\t expected: " << result_float._2 << "\t % error: " << error_theta_2 << "\n\n";
+		std::cout << "theta 1 obtained: " << result_fixed._1 << "\t expected: " << result_float._1 << "\t % error: " << error_theta_1 << "\n";
+		std::cout << "theta 2 obtained: " << result_fixed._2 << "\t expected: " << result_float._2 << "\t % error: " << error_theta_2 << "\n\n";
 	}
 	return 0;
 }

@@ -1,3 +1,5 @@
+#include <iostream>
+
 #include <hls_stream.h>
 #include <ap_fixed.h>
 #include <hls_math.h>
@@ -30,7 +32,18 @@ struct log_data{
 
 /******************************** C++ TEMPLATES ***************************************/
 
-int fixed_estimator(hls::stream<data_vector<est_precision > > &in, hls::stream<param_t<est_precision > > &out);
+int fixed_estimator(hls::stream<xadc_stream_interface> &seq_in_xadc,
+					hls::stream<param_t<est_precision > > &out,
+					est_precision I_scale_factor,
+					est_precision V_scale_factor,
+					est_precision Ig,
+					est_precision GAMMA11,
+					est_precision GAMMA12,
+					est_precision GAMMA21,
+					est_precision GAMMA22,
+					est_precision INIT_ALPHA,
+					est_precision INIT_BETA
+					);
 
 int wrapper_fixed_estimator(hls::stream<xadc_stream_interface> &seq_in_xadc,param_t<est_precision> &interface_param_apprx,
 			est_precision I_scale_factor,est_precision V_scale_factor,est_precision Ig,
@@ -77,14 +90,14 @@ int parameters_estimator(hls::stream<data_vector<T > > &in, hls::stream<param_t<
 // --------------------------------------------------------
 template<typename T>
 int samples_generator(hls::stream< data_vector<T > > &in, int n){
-//	const float ALPHA = 0.625;
-//	const float F_SAMPLING = 1e6;
-//	const float V_CTE = 16.69;
-//	const float MM_PI = 3.14159265358979323846;
-//	const float PVG_F = 1000;
-//	const float K = 0.3;
-//	const float I_G = 5.1387085e-6; //(b=-12.1787)
-//	float b=(float) log(I_G);
+	const float ALPHA = 0.625;
+	const float F_SAMPLING = 1e6;
+	const float V_CTE = 16.69;
+	const float MM_PI = 3.14159265358979323846;
+	const float PVG_F = 1000;
+	const float K = 0.3;
+	const float I_G = 5.1387085e-6; //(b=-12.1787)
+	float b=(float) log(I_G);
 
 	data_vector<T> samples;
 	samples._i=0;
@@ -92,29 +105,28 @@ int samples_generator(hls::stream< data_vector<T > > &in, int n){
 	float volt;
 	float current;
 	static int i = 0;
-//	volt = V_CTE+K*V_CTE*sin(2*MM_PI*PVG_F*i/F_SAMPLING);
-//	current = ALPHA*volt +b;
+	volt = V_CTE+K*V_CTE*sin(2*MM_PI*PVG_F*i/F_SAMPLING);
+	current = ALPHA*volt +b;
 
-	std::ifstream data("/home/thor/Escritorio/tutoriales/data.csv");
-	std::string column_c;
-	std::string column_v;
-	if(!data.is_open()) std::cout << "ERROR: File open"<<std::endl;
-
-	while(data.good()){
-		getline(data,column_c,',');
-		getline(data,column_v,'\n');
-		current=std::stof((column_c).c_str(),0);
-		volt=std::stof((column_v).c_str(),0);
-		i ++;
-		std::cout<<"line: "<<i<<" corriente: "<<current<<" volt: "<<volt<<std::endl;
-	}
+//	std::ifstream data("/home/thor/Escritorio/tutoriales/data.csv");
+//	std::string column_c;
+//	std::string column_v;
+//	if(!data.is_open()) std::cout << "ERROR: File open"<<std::endl;
+//
+//	while(data.good()){
+//		getline(data,column_c,',');
+//		getline(data,column_v,'\n');
+//		current=std::stof((column_c).c_str(),0);
+//		volt=std::stof((column_v).c_str(),0);
+//		i ++;
+//		std::cout<<"line: "<<i<<" corriente: "<<current<<" volt: "<<volt<<std::endl;
+//	}
 	samples._i= current;//(current<1) ?current*-1: current;
 	samples._v=volt;
-
+	i=n;
 	in.write(samples);
 	return 0;
 }
-
 // --------------------------------------------------------
 template<typename T>
 int adc_to_real_value(hls::stream<data_vector<T > > &in,
@@ -153,3 +165,5 @@ int precision_change_log_to_vector(hls::stream<log_data<type_in > > &in, hls::st
 	out.write(aux);
 	return 0;
 }
+
+

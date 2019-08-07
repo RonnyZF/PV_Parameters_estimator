@@ -3,9 +3,7 @@
 
 
 // THIS IS THE TOP LEVEL DESIGN THAT WILL BE SYNTHESIZED
-
-int pop_xadc_stream(hls::stream<xadc_stream_interface> &seq_in_xadc,
-		hls::stream<data_vector<est_precision > > &vector_in){
+int pop_xadc_stream(hls::stream<xadc_stream_interface> &seq_in_xadc,hls::stream<data_vector<est_precision > > &vector_in){
 	data_vector<est_precision> parallel_packed_samples;
 	// read pair of samples
 	for(int i = 0; i<2; i++){
@@ -21,7 +19,7 @@ int pop_xadc_stream(hls::stream<xadc_stream_interface> &seq_in_xadc,
 	return 0;
 }
 
-int fixed_estimator(hls::stream<data_vector<est_precision > > &vector_in,
+int fixed_estimator(hls::stream<xadc_stream_interface> &seq_in_xadc,
 					hls::stream<param_t<est_precision > > &out,
 					est_precision I_scale_factor,
 					est_precision V_scale_factor,
@@ -34,11 +32,14 @@ int fixed_estimator(hls::stream<data_vector<est_precision > > &vector_in,
 					est_precision INIT_BETA
 					){
 #pragma HLS dataflow
+	static hls::stream<data_vector<est_precision > > vector_in;
 	static hls::stream<data_vector<est_precision> > out_real;
 	static hls::stream<data_vector<log_precision> > in_log;
 	static hls::stream<log_data<log_precision> > out_log;
 	static hls::stream<data_vector<est_precision> > in_est;
 
+	//POP ADC data
+	pop_xadc_stream(seq_in_xadc,vector_in);
 	// Stage 1 - ADC samples to V/A units
 	adc_to_real_value<est_precision>(vector_in,out_real,I_scale_factor,V_scale_factor, Ig);
 	// Stage 2 - Precision change for logarithm calculation
@@ -67,7 +68,7 @@ int wrapper_fixed_estimator(
 			{
 
 #pragma HLS INTERFACE ap_ctrl_hs port=return
-#pragma HLS INTERFACE axis register port=seq_in_xadc
+#pragma HLS INTERFACE axis register both port=seq_in_xadc
 #pragma HLS INTERFACE s_axilite register port=I_scale_factor
 #pragma HLS INTERFACE s_axilite register port=V_scale_factor
 #pragma HLS INTERFACE s_axilite register port=Ig
@@ -78,13 +79,13 @@ int wrapper_fixed_estimator(
 #pragma HLS INTERFACE s_axilite register port=INIT_ALPHA
 #pragma HLS INTERFACE s_axilite register port=INIT_BETA
 #pragma HLS INTERFACE s_axilite port=interface_param_apprx
-#pragma HLS dataflow
 
-	static hls::stream<data_vector<est_precision > > vector_in;
+
+
 	static hls::stream<param_t<est_precision > > vector_out;
 	param_t<est_precision> result;
-	pop_xadc_stream(seq_in_xadc,vector_in);
-	fixed_estimator(vector_in,vector_out,I_scale_factor,V_scale_factor,Ig,GAMMA11,GAMMA12,GAMMA21,GAMMA22,INIT_ALPHA,INIT_BETA);
+#pragma HLS dataflow
+	fixed_estimator(seq_in_xadc,vector_out,I_scale_factor,V_scale_factor,Ig,GAMMA11,GAMMA12,GAMMA21,GAMMA22,INIT_ALPHA,INIT_BETA);
 	vector_out.read(result);
 	interface_param_apprx=result;
 
