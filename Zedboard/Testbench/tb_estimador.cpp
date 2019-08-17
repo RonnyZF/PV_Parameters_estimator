@@ -52,11 +52,11 @@ int main(){
 		theta_1_float = result_fixed._1;
 		theta_2_float = result_fixed._2;
 
-		error_theta_1 = ((theta_1_float-result_float._1)/result_float._1);
-		error_theta_2 = ((theta_2_float-result_float._2)/result_float._2);
+		error_theta_1 = abs(((theta_1_float-result_float._1)/result_float._1)*100);
+		error_theta_2 = ((theta_2_float-result_float._2)/result_float._2)*100;
 		//...
-		std::cout << "theta 1 obtained: " << result_fixed._1 << "\t expected: " << result_float._1 << "\t % error: " << error_theta_1 << "\n";
-		std::cout << "theta 2 obtained: " << result_fixed._2 << "\t expected: " << result_float._2 << "\t % error: " << error_theta_2 << "\n\n";
+		std::cout << "i obtained: " << result_fixed._1 << "\t expected: " << result_float._1 << "\t % error: " << error_theta_1 << "\n";
+		std::cout << "v obtained: " << result_fixed._2 << "\t expected: " << result_float._2 << "\t % error: " << error_theta_2 << "\n\n";
 	}
 	return 0;
 }
@@ -72,7 +72,7 @@ int float_estimator(hls::stream<data_vector<float > > &in, hls::stream<param_t<f
 
 	precision_change_vector_to_vector<float,float>(out_real,in_log);
 
-	fixed_log_calculation<data_vector<float>,float>(in_log,out_log);
+	fixed_log_calculation<scale_struct<float>,float>(in_log,out_log);
 
 	precision_change_log_to_vector<float,float>(out_log,in_est);
 

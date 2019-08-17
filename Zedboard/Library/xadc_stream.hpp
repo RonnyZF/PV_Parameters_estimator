@@ -3,7 +3,7 @@
 
 
 typedef struct xadc_stream_interface{
-	ap_fixed<16,1,AP_RND,AP_SAT> tdata;
+	ap_fixed<16,0,AP_RND,AP_SAT> tdata;
 	ap_uint<5> tid;
 } xadc_stream_interface;
 

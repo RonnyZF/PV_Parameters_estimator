@@ -31,13 +31,14 @@ int fixed_estimator(hls::stream<xadc_stream_interface> &seq_in_xadc,
 					est_precision INIT_ALPHA,
 					est_precision INIT_BETA
 					){
-#pragma HLS dataflow
+
 	static hls::stream<data_vector<est_precision > > vector_in;
 	static hls::stream<data_vector<est_precision> > out_real;
 	static hls::stream<data_vector<log_precision> > in_log;
 	static hls::stream<log_data<log_precision> > out_log;
 	static hls::stream<data_vector<est_precision> > in_est;
 
+#pragma HLS dataflow
 	//POP ADC data
 	pop_xadc_stream(seq_in_xadc,vector_in);
 	// Stage 1 - ADC samples to V/A units
@@ -45,7 +46,7 @@ int fixed_estimator(hls::stream<xadc_stream_interface> &seq_in_xadc,
 	// Stage 2 - Precision change for logarithm calculation
 	precision_change_vector_to_vector<est_precision,log_precision>(out_real,in_log);
 	// Stage 3 - Logarithm calculation
-	fixed_log_calculation<data_vector<est_precision>,log_precision>(in_log,out_log);
+	fixed_log_calculation<scale_struct<est_precision>,log_precision>(in_log,out_log);
 	// Stage 4 - Precision change for estimator
 	precision_change_log_to_vector<log_precision,est_precision>(out_log,in_est);
 	// Stage 5 - Parameters estimator
@@ -80,16 +81,13 @@ int wrapper_fixed_estimator(
 #pragma HLS INTERFACE s_axilite register port=INIT_BETA
 #pragma HLS INTERFACE s_axilite port=interface_param_apprx
 
-
-
 	static hls::stream<param_t<est_precision > > vector_out;
+
 	param_t<est_precision> result;
 #pragma HLS dataflow
 	fixed_estimator(seq_in_xadc,vector_out,I_scale_factor,V_scale_factor,Ig,GAMMA11,GAMMA12,GAMMA21,GAMMA22,INIT_ALPHA,INIT_BETA);
 	vector_out.read(result);
 	interface_param_apprx=result;
-
-
 	return 0;
 }
 

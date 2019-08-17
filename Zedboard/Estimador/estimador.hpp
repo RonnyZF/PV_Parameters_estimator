@@ -30,6 +30,12 @@ struct log_data{
 	T log;
 };
 
+template<typename T>
+struct scale_struct{
+	T _x;
+	T _y;
+};
+
 /******************************** C++ TEMPLATES ***************************************/
 
 int fixed_estimator(hls::stream<xadc_stream_interface> &seq_in_xadc,
@@ -45,10 +51,18 @@ int fixed_estimator(hls::stream<xadc_stream_interface> &seq_in_xadc,
 					est_precision INIT_BETA
 					);
 
-int wrapper_fixed_estimator(hls::stream<xadc_stream_interface> &seq_in_xadc,param_t<est_precision> &interface_param_apprx,
-			est_precision I_scale_factor,est_precision V_scale_factor,est_precision Ig,
-			est_precision GAMMA11,est_precision GAMMA12,est_precision GAMMA21,est_precision GAMMA22,
-			est_precision INIT_ALPHA, est_precision INIT_BETA);
+int wrapper_fixed_estimator(hls::stream<xadc_stream_interface> &seq_in_xadc,
+							param_t<est_precision> &interface_param_apprx,
+							est_precision I_scale_factor,
+							est_precision V_scale_factor,
+							est_precision Ig,
+							est_precision GAMMA11,
+							est_precision GAMMA12,
+							est_precision GAMMA21,
+							est_precision GAMMA22,
+							est_precision INIT_ALPHA,
+							est_precision INIT_BETA
+							);
 
 template<typename T>
 int parameters_estimator(hls::stream<data_vector<T > > &in, hls::stream<param_t<T > > &out,
@@ -105,8 +119,10 @@ int samples_generator(hls::stream< data_vector<T > > &in, int n){
 	float volt;
 	float current;
 	static int i = 0;
-	volt = V_CTE+K*V_CTE*sin(2*MM_PI*PVG_F*i/F_SAMPLING);
-	current = ALPHA*volt +b;
+	//volt = V_CTE+K*V_CTE*sin(2*MM_PI*PVG_F*i/F_SAMPLING);
+	volt = sin(2*MM_PI*PVG_F*i/F_SAMPLING);
+	//current = ALPHA*volt +b;
+	current = 0.125;//ALPHA*volt;
 
 //	std::ifstream data("/home/thor/Escritorio/tutoriales/data.csv");
 //	std::string column_c;
@@ -121,6 +137,7 @@ int samples_generator(hls::stream< data_vector<T > > &in, int n){
 //		i ++;
 //		std::cout<<"line: "<<i<<" corriente: "<<current<<" volt: "<<volt<<std::endl;
 //	}
+	std::cout<<"line: "<<i<<" corriente: "<<current<<" volt: "<<volt<<std::endl;
 	samples._i= current;//(current<1) ?current*-1: current;
 	samples._v=volt;
 	i=n;

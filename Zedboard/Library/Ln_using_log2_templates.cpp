@@ -9,9 +9,8 @@
  P escalamiento(T x){
 #pragma hls inline
  	T y = 0;
- 	bool not_finished_scaling = true;
- 	while (not_finished_scaling){
- #pragma HLS loop_tripcount min=1 max=3 avg=2
+ 	for(int i=0;i<=5;i++){
+#pragma HLS loop_tripcount min=1 max=5 avg=3
  		if (x<1){
  			x=2*x;
  			y=y-1;
@@ -21,12 +20,11 @@
  			y=y+1;
  		}
  		else{
- 			not_finished_scaling = false;
+ 			i=6;
  		}
  	}
  	P result = {x, y};
  	return result;
-
  }
 
  template<typename T>
@@ -53,7 +51,7 @@
  	sample_in=in.read();
  	sample_out.adc_v = sample_in._v;
  	P aux = escalamiento<P,T>(sample_in._i);
- 	T aux2 = approxLog2<T>(aux._v,aux._i);
+ 	T aux2 = approxLog2<T>(aux._x,aux._y);
  	sample_out.log = approxLn<T>(aux2);
 
  	out.write(sample_out);
