@@ -29,7 +29,6 @@ int main(void){
 
 	int p_1=0;
 	int p_2=0;
-	uint32_t gpio_mask = (AP_START);
 
 	int init_alpha = to_fixed(0.55);
 	int init_beta = to_fixed(-13);
@@ -40,9 +39,6 @@ int main(void){
 	int ig = to_fixed(10);
 	int i_scale_f = to_fixed(1);
 	int v_scale_f = to_fixed(1);
-
-
-	XGpio_DiscreteWrite(&Igpio_1,1,gpio_mask);
 
 	XWrapper_fixed_estimator_Set_INIT_ALPHA_V(&estimator, INT2U32(init_alpha));
 	XWrapper_fixed_estimator_Set_INIT_BETA_V(&estimator, INT2U32(init_beta));
@@ -74,11 +70,9 @@ int main(void){
 		param_1 = (float)p_1/pow(2,24);
 		param_2 = (float)p_2/pow(2,24);
 
-//		printf("P_1 = %lf\t P_2 = %lf\n\r",param_1,param_2);
 		printf("P_1 = %f\t P_2 = %f\n\r",param_1,param_2);
 	}
 	printf("Fin prueba\n\n\n");
-//	}
 
 }
 

@@ -1,7 +1,10 @@
- template<typename T>
+#include <iostream>
+
+template<typename T>
  T approxLn(T log2_result){
 #pragma hls inline
  	const T log2_e=1.442695041;
+ 	std::cout<<"log result= "<<log2_result/log2_e<<std::endl;
  	return log2_result/log2_e;
  }
 
