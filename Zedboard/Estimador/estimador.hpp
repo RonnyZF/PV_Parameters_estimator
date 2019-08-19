@@ -97,6 +97,7 @@ int parameters_estimator(hls::stream<data_vector<T > > &in, hls::stream<param_t<
 
 	theta_v_l._1=theta._1;
 	theta_v_l._2=theta._2;
+
 	out.write(theta);
 	return 0;
 }

@@ -29,7 +29,7 @@
 #define INT2U32(x) *(u32*)&x
 
 int to_fixed(double a){
-	a=trunc(a*pow(2,24));
+	a=a*pow(2,24);
 	return (int)a;
 }
 
