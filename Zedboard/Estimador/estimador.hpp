@@ -105,43 +105,33 @@ int parameters_estimator(hls::stream<data_vector<T > > &in, hls::stream<param_t<
 // --------------------------------------------------------
 template<typename T>
 int samples_generator(hls::stream< data_vector<T > > &in, int n){
-	const float ALPHA = 0.625;
-	const float F_SAMPLING = 1e6;
-	const float V_CTE = 16.69;
-	const float MM_PI = 3.14159265358979323846;
-	const float PVG_F = 1000;
-	const float K = 0.3;
-	const float I_G = 5.1387085e-6; //(b=-12.1787)
-	float b=(float) log(I_G);
-
 	data_vector<T> samples;
 	samples._i=0;
 	samples._v=0;
-	float volt;
-	float current;
-	static int i = 0;
-	//volt = V_CTE+K*V_CTE*sin(2*MM_PI*PVG_F*i/F_SAMPLING);
-	volt = sin(2*MM_PI*PVG_F*i/F_SAMPLING);
-	//current = ALPHA*volt +b;
-	current = 0.125;//ALPHA*volt;
 
-//	std::ifstream data("/home/thor/Escritorio/tutoriales/data.csv");
-//	std::string column_c;
-//	std::string column_v;
-//	if(!data.is_open()) std::cout << "ERROR: File open"<<std::endl;
-//
-//	while(data.good()){
-//		getline(data,column_c,',');
-//		getline(data,column_v,'\n');
-//		current=std::stof((column_c).c_str(),0);
-//		volt=std::stof((column_v).c_str(),0);
-//		i ++;
-//		std::cout<<"line: "<<i<<" corriente: "<<current<<" volt: "<<volt<<std::endl;
-//	}
-	std::cout<<"line: "<<i<<" corriente: "<<current<<" volt: "<<volt<<std::endl;
-	samples._i= current;//(current<1) ?current*-1: current;
+	float t;
+	float current;
+	float volt;
+
+	std::cout<<"n = "<<n<<std::endl;
+
+	std::ifstream data("/home/local/ESTUDIANTES/rzarate/python_code/DATA.CSV");
+	std::string time;
+	std::string column_c;
+	std::string column_v;
+	if(!data.is_open()) std::cout << "ERROR: File open"<<std::endl;
+
+	for(int a=1; a<=n;a++){
+		getline(data,time,',');
+		getline(data,column_c,',');
+		getline(data,column_v,'\n');
+		t=std::stof((time).c_str(),0);
+		current=std::stof((column_c).c_str(),0);
+		volt=std::stof((column_v).c_str(),0);
+	}
+	std::cout<<"line: "<<n<<" tiempo: "<<t<<" corriente: "<<current<<" volt: "<<volt<<std::endl;
+	samples._i= current;
 	samples._v=volt;
-	i=n;
 	in.write(samples);
 	return 0;
 }
@@ -149,9 +139,9 @@ int samples_generator(hls::stream< data_vector<T > > &in, int n){
 template<typename T>
 int adc_to_real_value(hls::stream<data_vector<T > > &in,
 					  hls::stream<data_vector<T > > &out,
-					  T I_scale_factor = 1,
-					  T V_scale_factor = 1,
-					  T Ig = 10){
+					  T I_scale_factor = 5,
+					  T V_scale_factor = 22,
+					  T Ig = 3.99){
 
 	const T min_current = 0.002;
 
