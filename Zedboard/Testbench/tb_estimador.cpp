@@ -1,4 +1,5 @@
 #include <iostream>
+#include <fstream>
 #include <hls_stream.h>
 #include <hls_math.h>
 #include "../Estimador/estimador.hpp"
@@ -19,9 +20,9 @@ int main(){
 	hls::stream<xadc_stream_interface> seq_in_xadc;
 	param_t<est_precision> interface_param_apprx;
 
-	est_precision I_scale_factor=1;
-	est_precision V_scale_factor=1;
-	est_precision Ig=10;
+	est_precision I_scale_factor=5;
+	est_precision V_scale_factor=22;
+	est_precision Ig=3.99;
 	est_precision GAMMA11=0.1;
 	est_precision GAMMA12=0;
 	est_precision GAMMA21=0;
@@ -34,11 +35,18 @@ int main(){
 	float theta_1_float=0;
 	float theta_2_float=0;
 
-	for (int i=0;i<10;i++){
+	std::ofstream csvfloat;
+	csvfloat.open("/home/thor/Escritorio/tutoriales/HLS_float.CSV");
+	std::ofstream csvfixed;
+	csvfixed.open("/home/thor/Escritorio/tutoriales/HLS_fixed.CSV");
+
+	for (int i=1;i<250;i++){
 // SW reference
+		std::cout<<"              cálculo float "<<std::endl;
 		float_samples_generator(in_float,i);
 		float_estimator(in_float,out_float);
 // HW reference
+		std::cout<<"              cálculo fixed "<<std::endl;
 		fixed_samples_generator(in_fixed,i);
 		//fixed_estimator(in_fixed,out_fixed);
 		xadc_interface_adapter(in_fixed,seq_in_xadc);
@@ -55,6 +63,9 @@ int main(){
 		error_theta_1 = abs(((theta_1_float-result_float._1)/result_float._1)*100);
 		error_theta_2 = ((theta_2_float-result_float._2)/result_float._2)*100;
 		//...
+		csvfloat <<result_float._1<<","<<result_float._2<<"\n";
+		csvfixed <<result_fixed._1<<","<<result_fixed._2<<"\n";
+
 		std::cout << "i obtained: " << result_fixed._1 << "\t expected: " << result_float._1 << "\t % error: " << error_theta_1 << "\n";
 		std::cout << "v obtained: " << result_fixed._2 << "\t expected: " << result_float._2 << "\t % error: " << error_theta_2 << "\n\n";
 	}
@@ -68,7 +79,7 @@ int float_estimator(hls::stream<data_vector<float > > &in, hls::stream<param_t<f
 	hls::stream<log_data<float> > out_log;
 	hls::stream<data_vector<float> > in_est;
 
-	adc_to_real_value<float>(in,out_real);
+	adc_to_real_value<float>(in,out_real,5,22,3.99);
 
 	precision_change_vector_to_vector<float,float>(out_real,in_log);
 
@@ -105,6 +116,7 @@ int xadc_interface_adapter(
 	// current channel
 	xadc_stream.tid = XADC_CHANNEL_2_ID;
 	xadc_stream.tdata = holder_vector._i;
+	std::cout<<"c int: "<<holder_vector._i<<" v int: "<<holder_vector._v<<std::endl;
 	seq_in_xadc.write(xadc_stream);
 	return 0;
 }

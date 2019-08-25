@@ -9,7 +9,7 @@
 #include "../Library/xadc_stream.hpp"
 
 typedef ap_fixed<32,8> est_precision;
-typedef ap_fixed<18,7> log_precision;
+typedef ap_fixed<18,4> log_precision;
 
 // --------------------------------------------------------
 template<typename T>
@@ -73,16 +73,20 @@ int parameters_estimator(hls::stream<data_vector<T > > &in, hls::stream<param_t<
 						  T INIT_ALPHA = 0.55,
 						  T INIT_BETA = -13.0){
 
- 	const T T_SAMPLING = 1e-6;
+ 	const T T_SAMPLING = 1e-3;
+ 	std::cout<<"t_sampl= "<<T_SAMPLING<<std::endl;
 
  	data_vector<T> sample_in=in.read(); // read fifo sample
  	static param_t<T> theta = {0,0}; // init theta register
- 	static param_t<T> theta_v_l = {INIT_ALPHA,INIT_BETA}; // init past theta register
+ 	static param_t<T> init_cond = {INIT_ALPHA,INIT_BETA}; // init past theta register
+ 	std::cout<<"init_cond: theta 1: "<<init_cond._1<<" theta 2: "<<init_cond._2<<std::endl;
  	T aux = 0.0;
 
+ 	std::cout<<"G11= "<<GAMMA11<<" G12= "<<GAMMA12<<" G21= "<<GAMMA21<<" G22= "<<GAMMA22<<std::endl;
+ 	std::cout<<"alpha = "<<INIT_ALPHA<<" beta"<<INIT_BETA<<std::endl;
 	aux = -sample_in._v;
-	aux *= theta_v_l._1;
-	aux += -theta_v_l._2;
+	aux *= init_cond._1;
+	aux -= init_cond._2;
 	aux += sample_in._i;
 
 	param_t<T> tuple_for_operations={GAMMA11*sample_in._v,GAMMA21*sample_in._v};
@@ -92,11 +96,11 @@ int parameters_estimator(hls::stream<data_vector<T > > &in, hls::stream<param_t<
 	tuple_for_operations._1*=aux;
 	tuple_for_operations._2*=aux;
 
-	theta._1 = tuple_for_operations._1*T_SAMPLING + theta_v_l._1;
-	theta._2 = tuple_for_operations._2*T_SAMPLING + theta_v_l._2;
+	theta._1 = tuple_for_operations._1*T_SAMPLING + init_cond._1;
+	theta._2 = tuple_for_operations._2*T_SAMPLING + init_cond._2;
 
-	theta_v_l._1=theta._1;
-	theta_v_l._2=theta._2;
+	init_cond._1=theta._1;
+	init_cond._2=theta._2;
 
 	out.write(theta);
 	return 0;
@@ -115,7 +119,7 @@ int samples_generator(hls::stream< data_vector<T > > &in, int n){
 
 	std::cout<<"n = "<<n<<std::endl;
 
-	std::ifstream data("/home/local/ESTUDIANTES/rzarate/python_code/DATA.CSV");
+	std::ifstream data("/home/thor/Escritorio/tutoriales/DATA.CSV");
 	std::string time;
 	std::string column_c;
 	std::string column_v;
@@ -145,11 +149,14 @@ int adc_to_real_value(hls::stream<data_vector<T > > &in,
 
 	const T min_current = 0.002;
 
+	std::cout<<"fi: "<<I_scale_factor<<" fv: "<<V_scale_factor<<" Ig: "<<Ig<<std::endl;
 	data_vector<T> sample_in=in.read();
 	sample_in._i = sample_in._i * I_scale_factor;
 	sample_in._v = sample_in._v * V_scale_factor;
+	std::cout<<"i scaled: "<<sample_in._i<<" v scaled: "<<sample_in._v<<std::endl;
 	T aux = Ig-sample_in._i;
 	sample_in._i = (Ig>=sample_in._i) ?aux: min_current;
+	std::cout<<"Ig - ipv: "<<sample_in._i<<" voltaje: "<<sample_in._v<<std::endl;
 	out.write(sample_in);
 	return 0;
 }

@@ -1,4 +1,5 @@
 #include <iostream>
+#include <fstream>
 #include "../Library/Ln_using_log2.hpp"
 
 
@@ -9,17 +10,22 @@ int main(){
 	hls::stream<data_vector<log_precision >> in;
 	hls::stream<log_data<log_precision >> out;
 	gen_samples(in);
-	float a = 0.02;
-	for (int i=1;i<500;i++){
+	float a = 0.001;
+
+	std::ofstream csv_log;
+	csv_log.open("/home/thor/Escritorio/tutoriales/HLS_log.CSV");
+
+	for (int i=1;i<10000;i++){
 		fixed_log(in,out);
 		float comp = log(a);
 		log_data<log_precision > resultado = out.read();
 		//calculos de error
 		float log_float = resultado.log;
-		float error = ((log_float-comp)/comp);
+		float error = abs((comp-log_float)/comp)*100;
+
+		csv_log <<resultado.adc_v<<","<<resultado.log<<"\n";
 		std::cout << "log("<<resultado.adc_v<<"): \t Resultado obtenido: "<< resultado.log << "\t esperado: " << comp << "\t %error: "<<error<<std::endl;
-		//std::cout << a<<","<<resultado.log << "," << comp<<std::endl;
-		a=a+0.02;
+		a=a+0.001;
 	}
 	return 0;
 }
@@ -28,9 +34,9 @@ int main(){
 	 data_vector<log_precision> samples;
 	samples._i=0;
 	samples._v=0;
-	log_precision a=0.02;
-	log_precision b=0.02;
-	for (int i=1;i<500;i++){
+	log_precision a=0.001;
+	log_precision b=0.001;
+	for (int i=1;i<10000;i++){
 		samples._v += a;
 		samples._i += b;
 		in.write(samples);

@@ -15,6 +15,7 @@ int pop_xadc_stream(hls::stream<xadc_stream_interface> &seq_in_xadc,hls::stream<
 			parallel_packed_samples._i = converter;
 		}
 	}
+	std::cout<<"c pop: "<<parallel_packed_samples._i<<" v pop: "<<parallel_packed_samples._v<<std::endl;
 	vector_in.write(parallel_packed_samples);
 	return 0;
 }

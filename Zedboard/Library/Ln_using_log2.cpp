@@ -3,6 +3,6 @@
 
 
 int fixed_log(hls::stream<data_vector<log_precision> > &in, hls::stream<log_data<log_precision> > &out){
-	fixed_log_calculation<data_vector<log_precision >,log_precision>(in,out);
+	fixed_log_calculation<scale_struct<log_precision >,log_precision>(in,out);
 	return 0;
 }
