@@ -10,11 +10,10 @@ int main(){
 	hls::stream<data_vector<log_precision >> in;
 	hls::stream<log_data<log_precision >> out;
 	gen_samples(in);
-	data_vector<log_precision> sample_in;
 	float a = 0.001;
 
 	std::ofstream csv_log;
-	csv_log.open("/home/thor/Escritorio/tutoriales/HLS_log.CSV");
+	csv_log.open("/home/thor/python_code/HLS_log.CSV");
 
 	for (int i=1;i<10000;i++){
 		fixed_log(in,out);
