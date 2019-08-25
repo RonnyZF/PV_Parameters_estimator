@@ -10,6 +10,7 @@ int main(){
 	hls::stream<data_vector<log_precision >> in;
 	hls::stream<log_data<log_precision >> out;
 	gen_samples(in);
+	data_vector<log_precision> sample_in;
 	float a = 0.001;
 
 	std::ofstream csv_log;

@@ -36,9 +36,9 @@ int main(){
 	float theta_2_float=0;
 
 	std::ofstream csvfloat;
-	csvfloat.open("/home/thor/Escritorio/tutoriales/HLS_float.CSV");
+	csvfloat.open("/home/thor/python_code/HLS_float.CSV");
 	std::ofstream csvfixed;
-	csvfixed.open("/home/thor/Escritorio/tutoriales/HLS_fixed.CSV");
+	csvfixed.open("/home/thor/python_code/HLS_fixed.CSV");
 
 	for (int i=1;i<250;i++){
 // SW reference
@@ -79,7 +79,7 @@ int float_estimator(hls::stream<data_vector<float > > &in, hls::stream<param_t<f
 	hls::stream<log_data<float> > out_log;
 	hls::stream<data_vector<float> > in_est;
 
-	adc_to_real_value<float>(in,out_real,5,22,3.99);
+	adc_to_real_value<float>(in,out_real);
 
 	precision_change_vector_to_vector<float,float>(out_real,in_log);
 

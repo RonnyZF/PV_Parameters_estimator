@@ -9,7 +9,7 @@ template<typename T>
  P escalamiento(T x){
 #pragma hls inline
  	T y = 0;
- 	for(int i=0;i<=5;i++){
+ 	for(int i=0;i<=7;i++){
 #pragma HLS loop_tripcount min=1 max=5 avg=3
  		if (x<1){
  			x=2*x;
@@ -20,7 +20,7 @@ template<typename T>
  			y=y+1;
  		}
  		else{
- 			i=6;
+ 			i=10;
  		}
  	}
  	P result = {x, y};
@@ -53,6 +53,7 @@ template<typename T>
  	P aux = escalamiento<P,T>(sample_in._i);
  	T aux2 = approxLog2<T>(aux._x,aux._y);
  	sample_out.log = approxLn<T>(aux2);
+ 	std::cout<<"log(ig-ipv)= "<<sample_out.log<<std::endl;
 
  	out.write(sample_out);
  	return 0;

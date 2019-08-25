@@ -119,11 +119,11 @@ int samples_generator(hls::stream< data_vector<T > > &in, int n){
 
 	std::cout<<"n = "<<n<<std::endl;
 
-	std::ifstream data("/home/thor/Escritorio/tutoriales/DATA.CSV");
+	std::ifstream data("/home/thor/python_code/DATA.CSV");
 	std::string time;
 	std::string column_c;
 	std::string column_v;
-	if(!data.is_open()) std::cout << "ERROR: File open"<<std::endl;
+	if(!data.is_open()) std::cout << "ERROR: can't open file"<<std::endl;
 
 	for(int a=1; a<=n;a++){
 		getline(data,time,',');
@@ -147,7 +147,7 @@ int adc_to_real_value(hls::stream<data_vector<T > > &in,
 					  T V_scale_factor = 22,
 					  T Ig = 3.99){
 
-	const T min_current = 0.002;
+	const T min_current = 0.00001;
 
 	std::cout<<"fi: "<<I_scale_factor<<" fv: "<<V_scale_factor<<" Ig: "<<Ig<<std::endl;
 	data_vector<T> sample_in=in.read();
