@@ -40,7 +40,7 @@ int main(){
 	std::ofstream csvfixed;
 	csvfixed.open("/home/thor/python_code/HLS_fixed.CSV");
 
-	for (int i=1;i<250;i++){
+	for (int i=1;i<15000;i++){
 // SW reference
 		std::cout<<"              cálculo float "<<std::endl;
 		float_samples_generator(in_float,i);
