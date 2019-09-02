@@ -8,8 +8,9 @@
 #include <stdlib.h>
 #include "../Library/xadc_stream.hpp"
 
-typedef ap_fixed<32,8> est_precision;
-typedef ap_fixed<18,4> log_precision;
+typedef ap_fixed<32,10> est_precision;
+//typedef ap_fixed<18,4> log_precision;
+typedef ap_fixed<32,8> log_precision;
 
 // --------------------------------------------------------
 template<typename T>
@@ -73,28 +74,41 @@ int parameters_estimator(hls::stream<data_vector<T > > &in, hls::stream<param_t<
 						  T INIT_ALPHA = 0.55,
 						  T INIT_BETA = -13.0){
 
- 	const T T_SAMPLING = 1e-3;
+ 	const T T_SAMPLING = 1e-6;
  	std::cout<<"t_sampl= "<<T_SAMPLING<<std::endl;
 
  	data_vector<T> sample_in=in.read(); // read fifo sample
  	static param_t<T> theta = {0,0}; // init theta register
  	static param_t<T> init_cond = {INIT_ALPHA,INIT_BETA}; // init past theta register
  	std::cout<<"init_cond: theta 1: "<<init_cond._1<<" theta 2: "<<init_cond._2<<std::endl;
- 	T aux = 0.0;
+ 	T aux = 0;
+ 	T m_one = -1;
 
  	std::cout<<"G11= "<<GAMMA11<<" G12= "<<GAMMA12<<" G21= "<<GAMMA21<<" G22= "<<GAMMA22<<std::endl;
  	std::cout<<"alpha = "<<INIT_ALPHA<<" beta"<<INIT_BETA<<std::endl;
-	aux = -sample_in._v;
+	aux = sample_in._v;
+	std::cout<<"vpv aux = "<<aux<<" vpv in= "<<sample_in._v<<std::endl;
+	aux *= m_one;
+	std::cout<<"-vpv= "<<aux<<std::endl;
 	aux *= init_cond._1;
+	std::cout<<"-vpv*theta1= "<<aux<<std::endl;
 	aux -= init_cond._2;
+	std::cout<<"-vpv*theta1-theta2= "<<aux<<std::endl;
 	aux += sample_in._i;
+	std::cout<<"-vpv*theta1-theta2+y= "<<aux<<std::endl;
 
 	param_t<T> tuple_for_operations={GAMMA11*sample_in._v,GAMMA21*sample_in._v};
+	std::cout<<"g11*vpv= "<<tuple_for_operations._1<<std::endl;
+	std::cout<<"g21*vpv= "<<tuple_for_operations._2<<std::endl;
 	tuple_for_operations._1+=GAMMA12;
 	tuple_for_operations._2+=GAMMA22;
+	std::cout<<"g11*vpv + g12= "<<tuple_for_operations._1<<std::endl;
+	std::cout<<"g21*vpv + g22= "<<tuple_for_operations._2<<std::endl;
 
 	tuple_for_operations._1*=aux;
 	tuple_for_operations._2*=aux;
+	std::cout<<"(g11*vpv + g12)*aux= "<<tuple_for_operations._1<<std::endl;
+	std::cout<<"(g21*vpv + g22)*aux= "<<tuple_for_operations._2<<std::endl;
 
 	theta._1 = tuple_for_operations._1*T_SAMPLING + init_cond._1;
 	theta._2 = tuple_for_operations._2*T_SAMPLING + init_cond._2;
@@ -119,7 +133,8 @@ int samples_generator(hls::stream< data_vector<T > > &in, int n){
 
 	std::cout<<"n = "<<n<<std::endl;
 
-	std::ifstream data("/home/thor/python_code/DATA.CSV");
+//	std::ifstream data("/home/thor/Escritorio/HPC_Lab/parameters_PV_generators/PV_Parameters_estimator/Software/python_code/DATA.CSV");
+	std::ifstream data("/home/local/ESTUDIANTES/rzarate/vivadoprjs/PV_Parameters_estimator/Software/python_code/DATA.CSV");
 	std::string time;
 	std::string column_c;
 	std::string column_v;

@@ -9,7 +9,7 @@ template<typename T>
  P escalamiento(T x){
 #pragma hls inline
  	T y = 0;
- 	for(int i=0;i<=7;i++){
+ 	for(int i=0;i<=15;i++){
 #pragma HLS loop_tripcount min=1 max=5 avg=3
  		if (x<1){
  			x=2*x;
@@ -20,7 +20,7 @@ template<typename T>
  			y=y+1;
  		}
  		else{
- 			i=10;
+ 			i=16;
  		}
  	}
  	P result = {x, y};

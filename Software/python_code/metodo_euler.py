@@ -49,16 +49,16 @@ PAST_ALPHA=0
 
 for i in range(len(time)):
 #for i in range(0,250):
-    print(i)
-    print(f'I = {Ipv[i]}  V = {Vpv[i]}')
+    #print(i)
+    #print(f'I = {Ipv[i]}  V = {Vpv[i]}')
     I=Ipv[i]*5
     V=Vpv[i]*22
-    print(f'I esc = {I}  V esc = {V}')
+    #print(f'I esc = {I}  V esc = {V}')
     y=math.log(IG-I)
-    print(f'ln(y-ipv) {y}')
+    #print(f'ln(y-ipv) {y}')
     theta1=((GAMMA11*V+GAMMA12)*(y-(V*INIT_ALPHA)-INIT_BETA))*T_SAMPLING+INIT_ALPHA
     theta2=((GAMMA21*V+GAMMA22)*(y-(V*INIT_ALPHA)-INIT_BETA))*T_SAMPLING+INIT_BETA
-    print(f' theta 1 = {theta1}  theta 2 = {theta2}\n\n')
+    #print(f' theta 1 = {theta1}  theta 2 = {theta2}\n\n')
     INIT_ALPHA=theta1
     INIT_BETA=theta2
 

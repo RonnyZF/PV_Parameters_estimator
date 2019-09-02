@@ -36,9 +36,11 @@ int main(){
 	float theta_2_float=0;
 
 	std::ofstream csvfloat;
-	csvfloat.open("/home/thor/python_code/HLS_float.CSV");
+//	csvfloat.open("/home/thor/Escritorio/HPC_Lab/parameters_PV_generators/PV_Parameters_estimator/Software/python_code.CSV");
+	csvfloat.open("/home/local/ESTUDIANTES/rzarate/vivadoprjs/PV_Parameters_estimator/Software/python_code/HLS_float.CSV");
 	std::ofstream csvfixed;
-	csvfixed.open("/home/thor/python_code/HLS_fixed.CSV");
+//	csvfixed.open("/home/thor/Escritorio/HPC_Lab/parameters_PV_generators/PV_Parameters_estimator/Software/python_code/HLS_fixed.CSV");
+	csvfloat.open("/home/local/ESTUDIANTES/rzarate/vivadoprjs/PV_Parameters_estimator/Software/python_code/HLS_fixed.CSV");
 
 	for (int i=1;i<15000;i++){
 // SW reference

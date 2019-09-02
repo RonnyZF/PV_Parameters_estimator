@@ -29,7 +29,6 @@ def InputVoltage(t):
 def InputCurrent(t):
 	return Lambda - math.exp(alpha*InputVoltage(t)+b)
 
-
 def InputVoltage_scale(t):
     "This functions defines the time evolution of v"		#Vpv	
     V_cte=16.69							#Average voltage
@@ -40,8 +39,8 @@ def InputCurrent_scale(t):
 	return (Lambda - math.exp(alpha*InputVoltage(t)+b))/5
 
 
-stoptime = 15
-numpoints = 15000
+stoptime = 0.125
+numpoints = 125000
 
 t = [stoptime * float(i) / (numpoints - 1) for i in range(numpoints)]
 time=np.array(t) 
