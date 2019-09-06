@@ -15,7 +15,7 @@ int pop_xadc_stream(hls::stream<xadc_stream_interface> &seq_in_xadc,hls::stream<
 			parallel_packed_samples._i = converter;
 		}
 	}
-	std::cout<<"c pop: "<<parallel_packed_samples._i<<" v pop: "<<parallel_packed_samples._v<<std::endl;
+//	std::cout<<"c pop: "<<parallel_packed_samples._i<<" v pop: "<<parallel_packed_samples._v<<std::endl;
 	vector_in.write(parallel_packed_samples);
 	return 0;
 }
@@ -45,7 +45,7 @@ int fixed_estimator(hls::stream<xadc_stream_interface> &seq_in_xadc,
 	// Stage 1 - ADC samples to V/A units
 	adc_to_real_value<est_precision>(vector_in,out_real,I_scale_factor,V_scale_factor, Ig);
 	// Stage 2 - Precision change for logarithm calculation
-	precision_change_vector_to_vector<est_precision,log_precision>(out_real,in_log);
+	precision_change_vector_to_log<est_precision,log_precision>(out_real,in_log);
 	// Stage 3 - Logarithm calculation
 	fixed_log_calculation<scale_struct<est_precision>,log_precision>(in_log,out_log);
 	// Stage 4 - Precision change for estimator

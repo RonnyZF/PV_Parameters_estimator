@@ -42,13 +42,13 @@ int main(){
 //	csvfixed.open("/home/thor/Escritorio/HPC_Lab/parameters_PV_generators/PV_Parameters_estimator/Software/python_code/HLS_fixed.CSV");
 	csvfloat.open("/home/local/ESTUDIANTES/rzarate/vivadoprjs/PV_Parameters_estimator/Software/python_code/HLS_fixed.CSV");
 
-	for (int i=1;i<15000;i++){
+	for (int i=1;i<10000;i++){
 // SW reference
-		std::cout<<"              cálculo float "<<std::endl;
+//		std::cout<<"              cálculo float "<<std::endl;
 		float_samples_generator(in_float,i);
 		float_estimator(in_float,out_float);
 // HW reference
-		std::cout<<"              cálculo fixed "<<std::endl;
+//		std::cout<<"              cálculo fixed "<<std::endl;
 		fixed_samples_generator(in_fixed,i);
 		//fixed_estimator(in_fixed,out_fixed);
 		xadc_interface_adapter(in_fixed,seq_in_xadc);
@@ -83,7 +83,7 @@ int float_estimator(hls::stream<data_vector<float > > &in, hls::stream<param_t<f
 
 	adc_to_real_value<float>(in,out_real);
 
-	precision_change_vector_to_vector<float,float>(out_real,in_log);
+	precision_change_vector_to_log<float,float>(out_real,in_log);
 
 	fixed_log_calculation<scale_struct<float>,float>(in_log,out_log);
 
@@ -118,7 +118,7 @@ int xadc_interface_adapter(
 	// current channel
 	xadc_stream.tid = XADC_CHANNEL_2_ID;
 	xadc_stream.tdata = holder_vector._i;
-	std::cout<<"c int: "<<holder_vector._i<<" v int: "<<holder_vector._v<<std::endl;
+//	std::cout<<"c int: "<<holder_vector._i<<" v int: "<<holder_vector._v<<std::endl;
 	seq_in_xadc.write(xadc_stream);
 	return 0;
 }
