@@ -1,3 +1,5 @@
+from joblib import Parallel, delayed
+import multiprocessing
 import csv
 import math
 import functools
@@ -39,66 +41,30 @@ def InputCurrent_scale(t):
 	return (Lambda - math.exp(alpha*InputVoltage(t)+b))/5
 
 
-stoptime = 0.125
-numpoints = 125000
+stoptime = 30#15
+numpoints = 3750000#1875000
+num_cores = multiprocessing.cpu_count()
 
 t = [stoptime * float(i) / (numpoints - 1) for i in range(numpoints)]
 time=np.array(t) 
-
-
-signal_plot=np.vectorize(InputVoltage)
-fig1=plt.figure(1)
-plt.plot(time[1:200], signal_plot(time)[1:200])
-plt.axis([0,0.3,0,25])
-plt.xlabel('time (s)')
-plt.ylabel('Voltage (V)')
-plt.title('Vpv')
-plt.grid(True)
-
-time=np.array(t) #Convertimos a array para poder generar y plotear
-signal_plot=np.vectorize(InputCurrent)
-signal_plot=signal_plot
-fig2=plt.figure(2)
-plt.plot(time[1:200], signal_plot(time)[1:200])
-plt.axis([0,0.3,-1,10])
-plt.xlabel('time (s)')
-plt.ylabel('Corrienten (I)')
-plt.title('Ipv')
-plt.grid(True)
-
-time=np.array(t) #Convertimos a array para poder generar y plotear
-volt_plot=np.vectorize(InputVoltage_scale)
-fig3=plt.figure(3)
-plt.plot(time[1:200], volt_plot(time)[1:200])
-plt.axis([0,0.3,-0.5,1.5])
-plt.xlabel('time (s)')
-plt.ylabel('Voltage escalado (V)')
-plt.title('Vpv escalado')
-plt.grid(True)
-
-time=np.array(t) #Convertimos a array para poder generar y plotear
-current_plot=np.vectorize(InputCurrent_scale)
-fig4=plt.figure(4)
-plt.plot(time[1:200], current_plot(time)[1:200])
-plt.axis([0,0.3,-0.5,1.5])
-plt.xlabel('time (s)')
-plt.ylabel('Corriente escalada (I)')
-plt.title('Ipv escalada')
-plt.grid(True)
-
-#csv generation
-
+inputs = range(len(time))
 volt_plot=np.vectorize(InputVoltage_scale)
 current_plot=np.vectorize(InputCurrent_scale)
 
-#with open('DATA_1msps.CSV', 'w') as csvFile:
+print(len(time))
+print(num_cores)
+
+V=Parallel(n_jobs=num_cores)((delayed(InputVoltage_scale)(time[i])) for i in inputs)
+I=Parallel(n_jobs=num_cores)((delayed(InputCurrent_scale)(time[i])) for i in inputs)
+volt_plot=np.array(V) 
+current_plot=np.array(I) 
+
+
 with open('DATA.CSV', 'w') as csvFile:
     row=[]
     writer = csv.writer(csvFile)
     for i in range(len(time)):
-    	row.append([time[i],current_plot(time)[i],volt_plot(time)[i]])
+    	row.append([time[i],current_plot[i],volt_plot[i]])
     	print(i)
     writer.writerows(row)
 csvFile.close()
-
-plt.show()

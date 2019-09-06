@@ -27,19 +27,28 @@ with open('DATA.CSV') as csv_file:
         t=float(row[0])
         c=float(row[1])
         v=float(row[2])
-        c_1=float(row[1])*5
-        v_1=float(row[2])*22
         time.append(t)
         current.append(c)
         volt.append(v)
-        current_scaled.append(c_1)
-        volt_scaled.append(v_1)
-        line_count += 1
 
-for i in range(len(time)):
-    Ig=3.99
-    LinearPV.append(math.log(Ig-current[i]))
+fig=plt.figure(4)
+ax = fig.add_subplot(1, 1, 1)
+ax.plot(time[1:len(time)], volt[1:len(time)], 'g')
+ax.plot(time[1:len(time)], current[1:len(time)], 'b')
+ax.axis([-0.0005,0.05,-1,1])
+ax.set_xlabel(r'time (s)')
+ax.set_ylabel(r'Volt (V)')
+
+x_ticks = np.arange(0, 0.05, 0.005)
+y_ticks = np.arange(-1, 1, 0.2)
+ax.set_xticks(x_ticks)
+ax.set_yticks(y_ticks)
+ax.grid(True,which='major')
+plt.savefig("señales.png")
+plt.show()
+
 #------------------------------------------------------------
+"""
 fig1=plt.figure(1)
 plt.plot(time[1:len(time)], current[1:len(time)], 'b')
 #plt.plot(time[1:2482], current[1:2482], 'b')
@@ -51,8 +60,8 @@ plt.grid(True)
 plt.savefig("ipv scaled x 5.png")
 
 fig2=plt.figure(2)
-#plt.plot(time[1:len(time)], volt[1:len(time)])
-plt.plot(time[1:2482], volt[1:2482],'b')
+plt.plot(time[1:len(time)], volt[1:len(time)])
+#plt.plot(time[1:2482], volt[1:2482],'b')
 plt.axis([-0.0005,0.3,0,1.5])
 plt.xlabel('time (s)')
 plt.ylabel('Volt (V)')
@@ -72,12 +81,12 @@ plt.savefig("ipv.png")
 plt.savefig("ipv.png")
 
 fig4=plt.figure(4)
-#plt.plot(time[1:len(time)], volt[1:len(time)])
-plt.plot(time[1:2482], volt_scaled[1:2482],'b')
+plt.plot(time[1:len(time)], volt_scaled[1:len(time)])
+#plt.plot(time[1:2482], volt_scaled[1:2482],'b')
 plt.axis([-0.0005,0.3,0,22])
 plt.xlabel('time (s)')
 plt.ylabel('Volt (V)')
 plt.title('Vpv')
 plt.grid(True)
 plt.savefig("vpv.png")
-plt.show()
+"""
