@@ -53,7 +53,7 @@ template<typename T>
  	P aux = escalamiento<P,T>(sample_in._i);
  	T aux2 = approxLog2<T>(aux._x,aux._y);
  	sample_out.log = approxLn<T>(aux2);
- 	std::cout<<"log(ig-ipv)= "<<sample_out.log<<std::endl;
+// 	std::cout<<"log(ig-ipv)= "<<sample_out.log<<std::endl;
 
  	out.write(sample_out);
  	return 0;
