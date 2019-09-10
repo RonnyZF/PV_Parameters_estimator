@@ -88,6 +88,9 @@ int parameters_estimator(hls::stream<data_vector<T > > &in, hls::stream<param_t<
  	data_vector<T> sample_in=in.read(); // read fifo sample
  	static param_t<T> theta = {0,0}; // init theta register
  	static param_t<T> init_cond = {INIT_ALPHA,INIT_BETA}; // init past theta register
+	output._v=init_cond._1;
+	output._i=init_cond._2;
+	raw_out.write(output);
 // 	std::cout<<"init_cond: theta 1: "<<init_cond._1<<" theta 2: "<<init_cond._2<<std::endl;
  	T aux = 0;
 // 	std::cout<<"G11= "<<GAMMA11<<" G12= "<<GAMMA12<<" G21= "<<GAMMA21<<" G22= "<<GAMMA22<<std::endl;
@@ -122,9 +125,11 @@ int parameters_estimator(hls::stream<data_vector<T > > &in, hls::stream<param_t<
 
 	out.write(theta);
 
-	output._v=sample_in._i;
-	output._i=input._i;
-	raw_out.write(output);
+//	output._v=sample_in._i;
+//	output._i=input._i;
+//	raw_out.write(output);
+
+
 
 	return 0;
 }
