@@ -8,9 +8,8 @@
 #include <stdlib.h>
 #include "../Library/xadc_stream.hpp"
 
-typedef ap_fixed<32,10> est_precision;
-//typedef ap_fixed<18,4> log_precision;
-typedef ap_fixed<32,8> log_precision;
+typedef ap_fixed<32,11> est_precision;
+typedef ap_fixed<18,5> log_precision;
 
 // --------------------------------------------------------
 template<typename T>
@@ -41,6 +40,7 @@ struct scale_struct{
 
 int fixed_estimator(hls::stream<xadc_stream_interface> &seq_in_xadc,
 					hls::stream<param_t<est_precision > > &out,
+					hls::stream<data_vector<est_precision > > &raw_out,
 					est_precision I_scale_factor,
 					est_precision V_scale_factor,
 					est_precision Ig,
@@ -54,6 +54,7 @@ int fixed_estimator(hls::stream<xadc_stream_interface> &seq_in_xadc,
 
 int wrapper_fixed_estimator(hls::stream<xadc_stream_interface> &seq_in_xadc,
 							param_t<est_precision> &interface_param_apprx,
+							data_vector<est_precision> &raw_out,
 							est_precision I_scale_factor,
 							est_precision V_scale_factor,
 							est_precision Ig,
@@ -67,6 +68,7 @@ int wrapper_fixed_estimator(hls::stream<xadc_stream_interface> &seq_in_xadc,
 
 template<typename T>
 int parameters_estimator(hls::stream<data_vector<T > > &in, hls::stream<param_t<T > > &out,
+						 hls::stream<data_vector<T > > &raw_in, hls::stream<data_vector<T > > &raw_out,
 						  T GAMMA11 = 0.1,
 						  T GAMMA12 =0,
 						  T GAMMA21 =0,
@@ -74,41 +76,40 @@ int parameters_estimator(hls::stream<data_vector<T > > &in, hls::stream<param_t<
 						  T INIT_ALPHA = 0.55,
 						  T INIT_BETA = -13.0){
 
+	data_vector<T> input=raw_in.read();
+	data_vector<T> output = {0,0};
+
  	const T T_SAMPLING = 1e-6;
-// 	std::cout<<"t_sampl= "<<T_SAMPLING<<std::endl;
+ 	std::cout<<"t_sampl= "<<T_SAMPLING<<std::endl;
 
  	data_vector<T> sample_in=in.read(); // read fifo sample
  	static param_t<T> theta = {0,0}; // init theta register
  	static param_t<T> init_cond = {INIT_ALPHA,INIT_BETA}; // init past theta register
-// 	std::cout<<"init_cond: theta 1: "<<init_cond._1<<" theta 2: "<<init_cond._2<<std::endl;
+ 	std::cout<<"init_cond: theta 1: "<<init_cond._1<<" theta 2: "<<init_cond._2<<std::endl;
  	T aux = 0;
- 	T m_one = -1;
-
-// 	std::cout<<"G11= "<<GAMMA11<<" G12= "<<GAMMA12<<" G21= "<<GAMMA21<<" G22= "<<GAMMA22<<std::endl;
-// 	std::cout<<"alpha = "<<INIT_ALPHA<<" beta"<<INIT_BETA<<std::endl;
-	aux = sample_in._v;
-//	std::cout<<"vpv aux = "<<aux<<" vpv in= "<<sample_in._v<<std::endl;
-	aux *= m_one;
-//	std::cout<<"-vpv= "<<aux<<std::endl;
+ 	std::cout<<"G11= "<<GAMMA11<<" G12= "<<GAMMA12<<" G21= "<<GAMMA21<<" G22= "<<GAMMA22<<std::endl;
+ 	std::cout<<"alpha = "<<INIT_ALPHA<<" beta"<<INIT_BETA<<std::endl;
+	aux = -input._v;
+	std::cout<<"-vpv= "<<aux<<std::endl;
 	aux *= init_cond._1;
-//	std::cout<<"-vpv*theta1= "<<aux<<std::endl;
+	std::cout<<"-vpv*theta1= "<<aux<<std::endl;
 	aux -= init_cond._2;
-//	std::cout<<"-vpv*theta1-theta2= "<<aux<<std::endl;
+	std::cout<<"-vpv*theta1-theta2= "<<aux<<std::endl;
 	aux += sample_in._i;
-//	std::cout<<"-vpv*theta1-theta2+y= "<<aux<<std::endl;
+	std::cout<<"-vpv*theta1-theta2+y= "<<aux<<std::endl;
 
-	param_t<T> tuple_for_operations={GAMMA11*sample_in._v,GAMMA21*sample_in._v};
-//	std::cout<<"g11*vpv= "<<tuple_for_operations._1<<std::endl;
-//	std::cout<<"g21*vpv= "<<tuple_for_operations._2<<std::endl;
+	param_t<T> tuple_for_operations={GAMMA11*input._v,GAMMA21*input._v};
+	std::cout<<"g11*vpv= "<<tuple_for_operations._1<<std::endl;
+	std::cout<<"g21*vpv= "<<tuple_for_operations._2<<std::endl;
 	tuple_for_operations._1+=GAMMA12;
 	tuple_for_operations._2+=GAMMA22;
-//	std::cout<<"g11*vpv + g12= "<<tuple_for_operations._1<<std::endl;
-//	std::cout<<"g21*vpv + g22= "<<tuple_for_operations._2<<std::endl;
+	std::cout<<"g11*vpv + g12= "<<tuple_for_operations._1<<std::endl;
+	std::cout<<"g21*vpv + g22= "<<tuple_for_operations._2<<std::endl;
 
 	tuple_for_operations._1*=aux;
 	tuple_for_operations._2*=aux;
-//	std::cout<<"(g11*vpv + g12)*aux= "<<tuple_for_operations._1<<std::endl;
-//	std::cout<<"(g21*vpv + g22)*aux= "<<tuple_for_operations._2<<std::endl;
+	std::cout<<"(g11*vpv + g12)*aux= "<<tuple_for_operations._1<<std::endl;
+	std::cout<<"(g21*vpv + g22)*aux= "<<tuple_for_operations._2<<std::endl;
 
 	theta._1 = tuple_for_operations._1*T_SAMPLING + init_cond._1;
 	theta._2 = tuple_for_operations._2*T_SAMPLING + init_cond._2;
@@ -117,6 +118,11 @@ int parameters_estimator(hls::stream<data_vector<T > > &in, hls::stream<param_t<
 	init_cond._2=theta._2;
 
 	out.write(theta);
+
+	output._v=sample_in._i;
+	output._i=input._i;
+	raw_out.write(output);
+
 	return 0;
 }
 
@@ -131,7 +137,8 @@ int samples_generator(hls::stream< data_vector<T > > &in, int n){
 	float t;
 	float current;
 	float volt;
-//	std::cout<<"n = "<<n<<std::endl;
+
+	std::cout<<"n = "<<n<<std::endl;
 //	std::ifstream data("/home/thor/Escritorio/HPC_Lab/parameters_PV_generators/PV_Parameters_estimator/Software/python_code/DATA.CSV");
 	std::ifstream data("/home/local/ESTUDIANTES/rzarate/vivadoprjs/PV_Parameters_estimator/Software/python_code/DATA.CSV");
 	std::string time;
@@ -147,49 +154,39 @@ int samples_generator(hls::stream< data_vector<T > > &in, int n){
 		current=std::stof((column_c).c_str(),0);
 		volt=std::stof((column_v).c_str(),0);
 	}
-//	std::cout<<"line: "<<n<<" tiempo: "<<t<<" corriente: "<<current<<" volt: "<<volt<<std::endl;
+	std::cout<<"line: "<<n<<" tiempo: "<<t<<" corriente: "<<current<<" volt: "<<volt<<std::endl;
 	samples._i= current;
 	samples._v=volt;
-	in.write(samples);
-	return 0;
-}
 
-/*
-template<typename T>
-int samples_generator(hls::stream< data_vector<T > > &in, int n){
-	data_vector<T> samples;
-	samples._i=0;
-	samples._v=0;
-	float volt;
-	float current;
-	static int i = 0;
-	volt = 0;//0.126;
-	current = 0;//0.125;
-	samples._i= current;
-	samples._v=volt;
+//	volt = 17.125732/22;//0.126;
+//	current = 2.903137/5;//0.125;
+//	samples._i= current;
+//	samples._v=volt;
 	in.write(samples);
 	return 0;
 }
-*/
 // --------------------------------------------------------
 template<typename T>
 int adc_to_real_value(hls::stream<data_vector<T > > &in,
 					  hls::stream<data_vector<T > > &out,
+					  hls::stream<data_vector<T > > &raw_out,
 					  T I_scale_factor = 5,
 					  T V_scale_factor = 22,
 					  T Ig = 3.99){
 
 	const T min_current = 0.00001;
 
-//	std::cout<<"fi: "<<I_scale_factor<<" fv: "<<V_scale_factor<<" Ig: "<<Ig<<std::endl;
+	std::cout<<"fi: "<<I_scale_factor<<" fv: "<<V_scale_factor<<" Ig: "<<Ig<<std::endl;
 	data_vector<T> sample_in=in.read();
 	sample_in._i = sample_in._i * I_scale_factor;
 	sample_in._v = sample_in._v * V_scale_factor;
-//	std::cout<<"i scaled: "<<sample_in._i<<" v scaled: "<<sample_in._v<<std::endl;
+	raw_out.write(sample_in);
+	std::cout<<"i scaled: "<<sample_in._i<<" v scaled: "<<sample_in._v<<std::endl;
 	T aux = Ig-sample_in._i;
 	sample_in._i = (Ig>=sample_in._i) ?aux: min_current;
-//	std::cout<<"Ig - ipv: "<<sample_in._i<<" voltaje: "<<sample_in._v<<std::endl;
+	std::cout<<"Ig - ipv: "<<sample_in._i<<" voltaje: "<<sample_in._v<<std::endl;
 	out.write(sample_in);
+
 	return 0;
 }
 

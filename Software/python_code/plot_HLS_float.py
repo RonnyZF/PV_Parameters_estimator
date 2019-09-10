@@ -37,7 +37,7 @@ with open('HLS_float.CSV') as csv_file:
         line_count += 1
 
 print(len(theta1))
-stoptime = 25
+stoptime = 1
 numpoints = len(theta1)
 t = [stoptime * float(i) / (numpoints - 1) for i in range(numpoints)]
 #------------------------------------------------------------

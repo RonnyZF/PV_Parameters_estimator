@@ -33,8 +33,8 @@ with open('DATA.CSV') as csv_file:
 
 fig=plt.figure(4)
 ax = fig.add_subplot(1, 1, 1)
-ax.plot(time[1:len(time)], volt[1:len(time)], 'g')
-ax.plot(time[1:len(time)], current[1:len(time)], 'b')
+ax.plot(time[1:len(time)], volt[1:len(time)], 'b')
+ax.plot(time[1:len(time)], current[1:len(time)], 'r')
 ax.axis([-0.0005,0.05,-1,1])
 ax.set_xlabel(r'time (s)')
 ax.set_ylabel(r'Volt (V)')

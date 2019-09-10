@@ -3,7 +3,9 @@
 
 
 // THIS IS THE TOP LEVEL DESIGN THAT WILL BE SYNTHESIZED
-int pop_xadc_stream(hls::stream<xadc_stream_interface> &seq_in_xadc,hls::stream<data_vector<est_precision > > &vector_in){
+int pop_xadc_stream(hls::stream<xadc_stream_interface> &seq_in_xadc,
+					hls::stream<data_vector<est_precision > > &vector_in){
+
 	data_vector<est_precision> parallel_packed_samples;
 	// read pair of samples
 	for(int i = 0; i<2; i++){
@@ -15,13 +17,14 @@ int pop_xadc_stream(hls::stream<xadc_stream_interface> &seq_in_xadc,hls::stream<
 			parallel_packed_samples._i = converter;
 		}
 	}
-//	std::cout<<"c pop: "<<parallel_packed_samples._i<<" v pop: "<<parallel_packed_samples._v<<std::endl;
+	std::cout<<"c pop: "<<parallel_packed_samples._i<<" v pop: "<<parallel_packed_samples._v<<std::endl;
 	vector_in.write(parallel_packed_samples);
 	return 0;
 }
 
 int fixed_estimator(hls::stream<xadc_stream_interface> &seq_in_xadc,
 					hls::stream<param_t<est_precision > > &out,
+					hls::stream<data_vector<est_precision > > &raw_out,
 					est_precision I_scale_factor,
 					est_precision V_scale_factor,
 					est_precision Ig,
@@ -35,6 +38,7 @@ int fixed_estimator(hls::stream<xadc_stream_interface> &seq_in_xadc,
 
 	static hls::stream<data_vector<est_precision > > vector_in;
 	static hls::stream<data_vector<est_precision> > out_real;
+	static hls::stream<data_vector<est_precision> > raw_out_real;
 	static hls::stream<data_vector<log_precision> > in_log;
 	static hls::stream<log_data<log_precision> > out_log;
 	static hls::stream<data_vector<est_precision> > in_est;
@@ -43,7 +47,7 @@ int fixed_estimator(hls::stream<xadc_stream_interface> &seq_in_xadc,
 	//POP ADC data
 	pop_xadc_stream(seq_in_xadc,vector_in);
 	// Stage 1 - ADC samples to V/A units
-	adc_to_real_value<est_precision>(vector_in,out_real,I_scale_factor,V_scale_factor, Ig);
+	adc_to_real_value<est_precision>(vector_in,out_real,raw_out_real,I_scale_factor,V_scale_factor, Ig);
 	// Stage 2 - Precision change for logarithm calculation
 	precision_change_vector_to_log<est_precision,log_precision>(out_real,in_log);
 	// Stage 3 - Logarithm calculation
@@ -51,13 +55,14 @@ int fixed_estimator(hls::stream<xadc_stream_interface> &seq_in_xadc,
 	// Stage 4 - Precision change for estimator
 	precision_change_log_to_vector<log_precision,est_precision>(out_log,in_est);
 	// Stage 5 - Parameters estimator
-	parameters_estimator<est_precision > (in_est,out,GAMMA11,GAMMA12,GAMMA21,GAMMA22,INIT_ALPHA,INIT_BETA);
+	parameters_estimator<est_precision > (in_est,out,raw_out_real,raw_out,GAMMA11,GAMMA12,GAMMA21,GAMMA22,INIT_ALPHA,INIT_BETA);
 	return 0;
 }
 
 int wrapper_fixed_estimator(
 			hls::stream<xadc_stream_interface> &seq_in_xadc,
 			param_t<est_precision> &interface_param_apprx,
+			data_vector<est_precision> &raw_out,
 			est_precision I_scale_factor,
 			est_precision V_scale_factor,
 			est_precision Ig,
@@ -81,14 +86,20 @@ int wrapper_fixed_estimator(
 #pragma HLS INTERFACE s_axilite register port=INIT_ALPHA
 #pragma HLS INTERFACE s_axilite register port=INIT_BETA
 #pragma HLS INTERFACE s_axilite port=interface_param_apprx
+#pragma HLS INTERFACE s_axilite port=raw_out
 
 	static hls::stream<param_t<est_precision > > vector_out;
+	static hls::stream<data_vector<est_precision > > raw_vector_out;
 
 	param_t<est_precision> result;
+	data_vector<est_precision> raw_result;
 #pragma HLS dataflow
-	fixed_estimator(seq_in_xadc,vector_out,I_scale_factor,V_scale_factor,Ig,GAMMA11,GAMMA12,GAMMA21,GAMMA22,INIT_ALPHA,INIT_BETA);
+	fixed_estimator(seq_in_xadc,vector_out,raw_vector_out,I_scale_factor,V_scale_factor,Ig,GAMMA11,GAMMA12,GAMMA21,GAMMA22,INIT_ALPHA,INIT_BETA);
 	vector_out.read(result);
+	raw_vector_out.read(raw_result);
 	interface_param_apprx=result;
+	raw_out=raw_result;
+	std::cout<<"raw i: "<<raw_result._i<<" raw v: "<<raw_result._v<<std::endl;
 	return 0;
 }
 

@@ -19,6 +19,7 @@ int main(){
 	hls::stream<param_t<est_precision > > out_fixed;
 	hls::stream<xadc_stream_interface> seq_in_xadc;
 	param_t<est_precision> interface_param_apprx;
+	data_vector<est_precision> raw_out;
 
 	est_precision I_scale_factor=5;
 	est_precision V_scale_factor=22;
@@ -40,19 +41,19 @@ int main(){
 	csvfloat.open("/home/local/ESTUDIANTES/rzarate/vivadoprjs/PV_Parameters_estimator/Software/python_code/HLS_float.CSV");
 	std::ofstream csvfixed;
 //	csvfixed.open("/home/thor/Escritorio/HPC_Lab/parameters_PV_generators/PV_Parameters_estimator/Software/python_code/HLS_fixed.CSV");
-	csvfloat.open("/home/local/ESTUDIANTES/rzarate/vivadoprjs/PV_Parameters_estimator/Software/python_code/HLS_fixed.CSV");
+	csvfixed.open("/home/local/ESTUDIANTES/rzarate/vivadoprjs/PV_Parameters_estimator/Software/python_code/HLS_fixed.CSV");
 
-	for (int i=1;i<10000;i++){
+	for (int i=1;i<15;i++){
 // SW reference
-//		std::cout<<"              cálculo float "<<std::endl;
+		std::cout<<"              cálculo float "<<std::endl;
 		float_samples_generator(in_float,i);
 		float_estimator(in_float,out_float);
 // HW reference
-//		std::cout<<"              cálculo fixed "<<std::endl;
+		std::cout<<"              cálculo fixed "<<std::endl;
 		fixed_samples_generator(in_fixed,i);
 		//fixed_estimator(in_fixed,out_fixed);
 		xadc_interface_adapter(in_fixed,seq_in_xadc);
-		wrapper_fixed_estimator(seq_in_xadc,interface_param_apprx,I_scale_factor,V_scale_factor,Ig,GAMMA11,GAMMA12,GAMMA21,GAMMA22,INIT_ALPHA,INIT_BETA);
+		wrapper_fixed_estimator(seq_in_xadc,interface_param_apprx,raw_out,I_scale_factor,V_scale_factor,Ig,GAMMA11,GAMMA12,GAMMA21,GAMMA22,INIT_ALPHA,INIT_BETA);
 		out_fixed.write(interface_param_apprx);
 
 		param_t<float> result_float = out_float.read();
@@ -74,14 +75,27 @@ int main(){
 	return 0;
 }
 // --------------------------------------------------------
-int float_estimator(hls::stream<data_vector<float > > &in, hls::stream<param_t<float > > &out){
+int float_estimator(hls::stream<data_vector<float > > &in,
+					hls::stream<param_t<float > > &out){
 
-	hls::stream<data_vector<float> > out_real;
-	hls::stream<data_vector<float> > in_log;
-	hls::stream<log_data<float> > out_log;
-	hls::stream<data_vector<float> > in_est;
+	float I_scale_factor=5;
+	float V_scale_factor=22;
+	float Ig=3.99;
+	float GAMMA11=0.1;
+	float GAMMA12=0;
+	float GAMMA21=0;
+	float GAMMA22=100;
+	float INIT_ALPHA = 0.55;
+	float INIT_BETA = -13.0;
 
-	adc_to_real_value<float>(in,out_real);
+	hls::stream<data_vector<float> > out_real("1");
+	hls::stream<data_vector<float> > raw_out_real("2");
+	hls::stream<data_vector<float> > in_log("3");
+	hls::stream<log_data<float> > out_log("4");
+	hls::stream<data_vector<float> > in_est("5");
+	hls::stream<data_vector<float> > raw_out("6");
+
+	adc_to_real_value<float>(in,out_real,raw_out_real,I_scale_factor,V_scale_factor,Ig);
 
 	precision_change_vector_to_log<float,float>(out_real,in_log);
 
@@ -89,7 +103,7 @@ int float_estimator(hls::stream<data_vector<float > > &in, hls::stream<param_t<f
 
 	precision_change_log_to_vector<float,float>(out_log,in_est);
 
-	parameters_estimator<float > (in_est,out);
+	parameters_estimator<float > (in_est,out,raw_out_real,raw_out,GAMMA11,GAMMA12,GAMMA21,GAMMA22,INIT_ALPHA,INIT_BETA);
 	return 0;
 }
 // --------------------------------------------------------
@@ -101,7 +115,7 @@ int float_samples_generator(hls::stream<data_vector<float > > &in, int n){
 
 // --------------------------------------------------------
 int fixed_samples_generator(hls::stream<data_vector<est_precision > > &in, int n){
-	samples_generator<est_precision>(in, n);
+	samples_generator<est_precision>(in,n);
 	return 0;
 }
 
