@@ -50,7 +50,8 @@ int fixed_estimator(hls::stream<xadc_stream_interface> &seq_in_xadc,
 					est_precision GAMMA22,
 					est_precision INIT_ALPHA,
 					est_precision INIT_BETA,
-					est_precision T_SAMPLING
+					est_precision T_SAMPLING,
+					est_precision SET_FLAG
 					);
 
 int wrapper_fixed_estimator(hls::stream<xadc_stream_interface> &seq_in_xadc,
@@ -65,30 +66,39 @@ int wrapper_fixed_estimator(hls::stream<xadc_stream_interface> &seq_in_xadc,
 							est_precision GAMMA22,
 							est_precision INIT_ALPHA,
 							est_precision INIT_BETA,
-							est_precision T_SAMPLING
+							est_precision T_SAMPLING,
+							est_precision SET_FLAG
 							);
 
 template<typename T>
 int parameters_estimator(hls::stream<data_vector<T > > &in, hls::stream<param_t<T > > &out,
 						 hls::stream<data_vector<T > > &raw_in, hls::stream<data_vector<T > > &raw_out,
-						  T GAMMA11 = 0.1,
-						  T GAMMA12 =0,
-						  T GAMMA21 =0,
-						  T GAMMA22 = 100,
-						  T INIT_ALPHA = 0.55,
-						  T INIT_BETA = -13.0,
-						  T T_SAMPLING = 1e-3){
+						  T GAMMA11,
+						  T GAMMA12,
+						  T GAMMA21,
+						  T GAMMA22,
+						  T INIT_ALPHA,
+						  T INIT_BETA,
+						  T T_SAMPLING,
+						  T SET_FLAG){
 
 	data_vector<T> input=raw_in.read();
 	data_vector<T> output = {0,0};
 
 // 	std::cout<<"t_sampl= "<<T_SAMPLING<<std::endl;
 
+
  	data_vector<T> sample_in=in.read(); // read fifo sample
  	static param_t<T> theta = {0,0}; // init theta register
- 	static param_t<T> init_cond = {INIT_ALPHA,INIT_BETA}; // init past theta register
-	output._v=init_cond._1;
-	output._i=init_cond._2;
+ 	static T init_cond_1 = 0;
+	static T init_cond_2 = 0;
+ 	//static param_t<T> init_cond = {INIT_ALPHA,INIT_BETA}; // init past theta register
+ 	if(SET_FLAG){
+ 		init_cond_1 = INIT_ALPHA;
+ 		init_cond_2 = INIT_BETA;
+ 	}
+	output._v=init_cond_1;
+	output._i=init_cond_2;
 	raw_out.write(output);
 // 	std::cout<<"init_cond: theta 1: "<<init_cond._1<<" theta 2: "<<init_cond._2<<std::endl;
  	T aux = 0;
@@ -96,9 +106,9 @@ int parameters_estimator(hls::stream<data_vector<T > > &in, hls::stream<param_t<
 // 	std::cout<<"alpha = "<<INIT_ALPHA<<" beta"<<INIT_BETA<<std::endl;
 	aux = -input._v;
 //	std::cout<<"-vpv= "<<aux<<std::endl;
-	aux *= init_cond._1;
+	aux *= init_cond_1;
 //	std::cout<<"-vpv*theta1= "<<aux<<std::endl;
-	aux -= init_cond._2;
+	aux -= init_cond_2;
 //	std::cout<<"-vpv*theta1-theta2= "<<aux<<std::endl;
 	aux += sample_in._i;
 //	std::cout<<"-vpv*theta1-theta2+y= "<<aux<<std::endl;
@@ -116,11 +126,11 @@ int parameters_estimator(hls::stream<data_vector<T > > &in, hls::stream<param_t<
 //	std::cout<<"(g11*vpv + g12)*aux= "<<tuple_for_operations._1<<std::endl;
 //	std::cout<<"(g21*vpv + g22)*aux= "<<tuple_for_operations._2<<std::endl;
 
-	theta._1 = tuple_for_operations._1*T_SAMPLING + init_cond._1;
-	theta._2 = tuple_for_operations._2*T_SAMPLING + init_cond._2;
+	theta._1 = tuple_for_operations._1*T_SAMPLING + init_cond_1;
+	theta._2 = tuple_for_operations._2*T_SAMPLING + init_cond_2;
 
-	init_cond._1=theta._1;
-	init_cond._2=theta._2;
+	init_cond_1=theta._1;
+	init_cond_2=theta._2;
 
 	out.write(theta);
 
