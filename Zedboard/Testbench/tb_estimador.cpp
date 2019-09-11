@@ -18,6 +18,7 @@ int main(){
 	hls::stream<param_t<float > > out_float;
 	hls::stream<data_vector<float> > raw_out_float("id");
 	hls::stream<param_t<est_precision > > out_fixed;
+	hls::stream<data_vector<est_precision > > raw_out_fixed;
 	hls::stream<xadc_stream_interface> seq_in_xadc;
 	param_t<est_precision> interface_param_apprx;
 	data_vector<est_precision> raw_out;
@@ -58,9 +59,11 @@ int main(){
 		xadc_interface_adapter(in_fixed,seq_in_xadc);
 		wrapper_fixed_estimator(seq_in_xadc,interface_param_apprx,raw_out,I_scale_factor,V_scale_factor,Ig,GAMMA11,GAMMA12,GAMMA21,GAMMA22,INIT_ALPHA,INIT_BETA,T_SAMPLING);
 		out_fixed.write(interface_param_apprx);
+		raw_out_fixed.write(raw_out);
 
 		param_t<float> result_float = out_float.read();
 		param_t<est_precision> result_fixed = out_fixed.read();
+		data_vector<est_precision> init_ant_fixed = raw_out_fixed.read();
 
 		//calculos de error
 		theta_1_float = result_fixed._1;
@@ -72,8 +75,9 @@ int main(){
 		csvfloat <<result_float._1<<","<<result_float._2<<"\n";
 		csvfixed <<result_fixed._1<<","<<result_fixed._2<<"\n";
 
-		std::cout << "i obtained: " << result_fixed._1 << "\t expected: " << result_float._1 << "\t % error: " << error_theta_1 << "\n";
-		std::cout << "v obtained: " << result_fixed._2 << "\t expected: " << result_float._2 << "\t % error: " << error_theta_2 << "\n\n";
+		std::cout << "alpha inicial: " << init_ant_fixed._v << "\t beta inicial: " << init_ant_fixed._i << "\n";
+		std::cout << "alpha obtained: " << result_fixed._1 << "\t expected: " << result_float._1 << "\t % error: " << error_theta_1 << "\n";
+		std::cout << "beta obtained: " << result_fixed._2 << "\t expected: " << result_float._2 << "\t % error: " << error_theta_2 << "\n\n";
 	}
 	return 0;
 }

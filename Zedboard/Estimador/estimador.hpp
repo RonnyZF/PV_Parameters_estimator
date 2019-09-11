@@ -82,7 +82,6 @@ int parameters_estimator(hls::stream<data_vector<T > > &in, hls::stream<param_t<
 	data_vector<T> input=raw_in.read();
 	data_vector<T> output = {0,0};
 
-// 	const T T_SAMPLING = 1e-3;
 // 	std::cout<<"t_sampl= "<<T_SAMPLING<<std::endl;
 
  	data_vector<T> sample_in=in.read(); // read fifo sample
@@ -146,30 +145,29 @@ int samples_generator(hls::stream< data_vector<T > > &in, int n){
 	float current;
 	float volt;
 
-//	std::cout<<"n = "<<n<<std::endl;
-////	std::ifstream data("/home/thor/Escritorio/HPC_Lab/parameters_PV_generators/PV_Parameters_estimator/Software/python_code/DATA.CSV");
-//	std::ifstream data("/home/local/ESTUDIANTES/rzarate/vivadoprjs/PV_Parameters_estimator/Software/python_code/DATA.CSV");
-//	std::string time;
-//	std::string column_c;
-//	std::string column_v;
-//	if(!data.is_open()) std::cout << "ERROR: can't open file"<<std::endl;
-//
-//	for(int a=1; a<=n;a++){
-//		getline(data,time,',');
-//		getline(data,column_c,',');
-//		getline(data,column_v,'\n');
-//		t=std::stof((time).c_str(),0);
-//		current=std::stof((column_c).c_str(),0);
-//		volt=std::stof((column_v).c_str(),0);
-//	}
-//	std::cout<<"line: "<<n<<" tiempo: "<<t<<" corriente: "<<current<<" volt: "<<volt<<std::endl;
-//	samples._i= current;
-//	samples._v=volt;
+//	std::ifstream data("/home/thor/Escritorio/HPC_Lab/parameters_PV_generators/PV_Parameters_estimator/Software/python_code/DATA.CSV");
+	std::ifstream data("/home/local/ESTUDIANTES/rzarate/vivadoprjs/PV_Parameters_estimator/Software/python_code/DATA.CSV");
+	std::string time;
+	std::string column_c;
+	std::string column_v;
+	if(!data.is_open()) std::cout << "ERROR: can't open file"<<std::endl;
 
-	volt = 17.125732/22;//0.126;
-	current = 2.903137/5;//0.125;
+	for(int a=1; a<=n;a++){
+		getline(data,time,',');
+		getline(data,column_c,',');
+		getline(data,column_v,'\n');
+		t=std::stof((time).c_str(),0);
+		current=std::stof((column_c).c_str(),0);
+		volt=std::stof((column_v).c_str(),0);
+	}
+//	std::cout<<"line: "<<n<<" tiempo: "<<t<<" corriente: "<<current<<" volt: "<<volt<<std::endl;
 	samples._i= current;
 	samples._v=volt;
+
+//	volt = 17.125732/22;//0.126;
+//	current = 2.903137/5;//0.125;
+//	samples._i= current;
+//	samples._v=volt;
 	in.write(samples);
 	return 0;
 }
