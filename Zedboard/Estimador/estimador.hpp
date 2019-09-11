@@ -97,8 +97,8 @@ int parameters_estimator(hls::stream<data_vector<T > > &in, hls::stream<param_t<
  		init_cond_1 = INIT_ALPHA;
  		init_cond_2 = INIT_BETA;
  	}
-	output._v=init_cond_1;
-	output._i=init_cond_2;
+	output._v=input._v;
+	output._i=input._i;
 	raw_out.write(output);
 // 	std::cout<<"init_cond: theta 1: "<<init_cond._1<<" theta 2: "<<init_cond._2<<std::endl;
  	T aux = 0;

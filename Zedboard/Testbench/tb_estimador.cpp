@@ -48,7 +48,7 @@ int main(){
 //	csvfixed.open("/home/thor/Escritorio/HPC_Lab/parameters_PV_generators/PV_Parameters_estimator/Software/python_code/HLS_fixed.CSV");
 	csvfixed.open("/home/local/ESTUDIANTES/rzarate/vivadoprjs/PV_Parameters_estimator/Software/python_code/HLS_fixed.CSV");
 
-	for (int i=1;i<10000;i++){
+	for (int i=1;i<15000;i++){
 		std::cout<<"n = "<<i<<std::endl;
 // SW reference
 //		std::cout<<"              cálculo float "<<std::endl;
