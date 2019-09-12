@@ -31,8 +31,15 @@ with open('DATA.CSV') as csv_file:
         current.append(c)
         volt.append(v)
 
+print(f' Corriente max: {max(current)} Corriente min: {min(current)}')
+print(f' Volt max: {max(volt)} Volt min: {min(volt)}')
+print(f' Vp-p: {max(volt)-min(volt)}')
+print(f' Ip-p: {max(current)-min(current)}')
+
 fig=plt.figure(4)
 ax = fig.add_subplot(1, 1, 1)
+ax.plot(time[1:len(time)], volt[1:len(time)], 'r')
+ax.plot(time[1:len(time)], current[1:len(time)], 'b')
 ax.plot(time[1:len(time)], volt[1:len(time)], 'b')
 ax.plot(time[1:len(time)], current[1:len(time)], 'r')
 ax.axis([-0.0005,0.05,-1,1])
