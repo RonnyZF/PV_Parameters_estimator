@@ -1,15 +1,7 @@
-from joblib import Parallel, delayed
-import multiprocessing
 import csv
 import math
 import functools
 import numpy as np
-import scipy as sp
-import matplotlib.pyplot as plt
-import scipy.signal as signal
-from scipy.integrate import odeint
-from scipy.interpolate import interp1d
-from matplotlib import rc
 
 Lambda=3.99                     #Short-Circuit current
 Psi=5.1387085e-6                #Is current (saturation)
