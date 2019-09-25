@@ -9,7 +9,7 @@ from scipy.interpolate import interp1d
 from matplotlib import rc
 from numpy import array
 
-samples=3750000
+samples=192000
 time=[]
 current=[]
 volt=[]
@@ -38,4 +38,4 @@ xArray=np.array(aList)
 print(xArray)
 f = "sound.wav"
 print ("writing " + f)
-wavfile.write(f, 125000, xArray.T)
+wavfile.write(f, 192000, xArray.T)

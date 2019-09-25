@@ -17,7 +17,6 @@ int pop_xadc_stream(hls::stream<xadc_stream_interface> &seq_in_xadc,
 			parallel_packed_samples._i = converter;
 		}
 	}
-//	std::cout<<"c pop: "<<parallel_packed_samples._i<<" v pop: "<<parallel_packed_samples._v<<std::endl;
 	vector_in.write(parallel_packed_samples);
 	return 0;
 }
@@ -105,7 +104,6 @@ int wrapper_fixed_estimator(
 	raw_vector_out.read(raw_result);
 	interface_param_apprx=result;
 	raw_out=raw_result;
-//	std::cout<<"raw i: "<<raw_result._i<<" raw v: "<<raw_result._v<<std::endl;
 	return 0;
 }
 

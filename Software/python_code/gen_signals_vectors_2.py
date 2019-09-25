@@ -17,7 +17,7 @@ def InputVoltage(t):
     "This functions defines the time evolution of v"        #Vpv    
     V_cte=16.69                         #Average voltage
     #print (V_cte+0.3*V_cte*math.sin(2*math.pi*100*t))      #Print Vpv
-    return V_cte+0.3*V_cte*math.sin(2*math.pi*100*t)
+    return V_cte+0.3*V_cte*math.sin(2*math.pi*1000*t)
 #------------------------------------------------
 
 def InputCurrent(t):
@@ -26,7 +26,7 @@ def InputCurrent(t):
 def InputVoltage_scale(t):
     "This functions defines the time evolution of v"        #Vpv    
     V_cte=16.69                         #Average voltage
-    return (V_cte+0.3*V_cte*math.sin(2*math.pi*100*t))/22
+    return (V_cte+0.3*V_cte*math.sin(2*math.pi*1000*t))/22
 #------------------------------------------------
 
 def InputCurrent_scale(t):
@@ -34,7 +34,7 @@ def InputCurrent_scale(t):
 
 t = [0]
 i=0
-minutos=10
+minutos=1
 sample_rate=192000
 step=1/sample_rate
 

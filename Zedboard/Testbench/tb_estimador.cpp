@@ -42,22 +42,19 @@ int main(){
 	float theta_2_float=0;
 
 	std::ofstream csvfloat;
-//	csvfloat.open("/home/thor/Escritorio/HPC_Lab/parameters_PV_generators/PV_Parameters_estimator/Software/python_code.CSV");
 	csvfloat.open("/home/local/ESTUDIANTES/rzarate/vivadoprjs/PV_Parameters_estimator/Software/python_code/HLS_float.CSV");
 	std::ofstream csvfixed;
-//	csvfixed.open("/home/thor/Escritorio/HPC_Lab/parameters_PV_generators/PV_Parameters_estimator/Software/python_code/HLS_fixed.CSV");
 	csvfixed.open("/home/local/ESTUDIANTES/rzarate/vivadoprjs/PV_Parameters_estimator/Software/python_code/HLS_fixed.CSV");
 
-	for (int i=1;i<15000;i++){
+	for (int i=1;i<10000;i++){
 		std::cout<<"n = "<<i<<std::endl;
 // SW reference
-//		std::cout<<"              cálculo float "<<std::endl;
+		std::cout<<"              cálculo float "<<std::endl;
 		float_samples_generator(in_float,i);
 		float_estimator(in_float,out_float,raw_out_float,set_flag_float);
 // HW reference
-//		std::cout<<"              cálculo fixed "<<std::endl;
+		std::cout<<"              cálculo fixed "<<std::endl;
 		fixed_samples_generator(in_fixed,i);
-		//fixed_estimator(in_fixed,out_fixed);
 		xadc_interface_adapter(in_fixed,seq_in_xadc);
 		wrapper_fixed_estimator(seq_in_xadc,interface_param_apprx,raw_out,I_scale_factor,V_scale_factor,Ig,GAMMA11,GAMMA12,GAMMA21,GAMMA22,INIT_ALPHA,INIT_BETA,T_SAMPLING,SET_FLAG);
 		out_fixed.write(interface_param_apprx);
@@ -145,7 +142,6 @@ int xadc_interface_adapter(
 	// current channel
 	xadc_stream.tid = XADC_CHANNEL_2_ID;
 	xadc_stream.tdata = holder_vector._i;
-//	std::cout<<"c int: "<<holder_vector._i<<" v int: "<<holder_vector._v<<std::endl;
 	seq_in_xadc.write(xadc_stream);
 	return 0;
 }
