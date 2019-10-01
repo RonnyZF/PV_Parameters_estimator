@@ -45,6 +45,8 @@ int main(){
 	csvfloat.open("/home/local/ESTUDIANTES/rzarate/vivadoprjs/PV_Parameters_estimator/Software/python_code/HLS_float.CSV");
 	std::ofstream csvfixed;
 	csvfixed.open("/home/local/ESTUDIANTES/rzarate/vivadoprjs/PV_Parameters_estimator/Software/python_code/HLS_fixed.CSV");
+	std::ofstream csverror;
+	csverror.open("/home/local/ESTUDIANTES/rzarate/vivadoprjs/PV_Parameters_estimator/Software/python_code/HLS_ERROR.CSV");
 
 	for (int i=1;i<10000;i++){
 		std::cout<<"n = "<<i<<std::endl;
@@ -75,6 +77,7 @@ int main(){
 		//...
 		csvfloat <<result_float._1<<","<<result_float._2<<"\n";
 		csvfixed <<result_fixed._1<<","<<result_fixed._2<<"\n";
+		csverror <<error_theta_1<<","<<error_theta_2<<"\n";
 
 		std::cout << "alpha inicial: " << init_ant_fixed._v << "\t beta inicial: " << init_ant_fixed._i << "\n";
 		std::cout << "alpha obtained: " << result_fixed._1 << "\t expected: " << result_float._1 << "\t % error: " << error_theta_1 << "\n";

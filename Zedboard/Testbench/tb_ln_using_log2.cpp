@@ -13,7 +13,7 @@ int main(){
 	float a = 0.001;
 
 	std::ofstream csv_log;
-	csv_log.open("/home/thor/python_code/HLS_log.CSV");
+	csv_log.open("/home/local/ESTUDIANTES/rzarate/vivadoprjs/PV_Parameters_estimator/Software/python_code/HLS_LOG2.CSV");
 
 	for (int i=1;i<10000;i++){
 		fixed_log(in,out);
@@ -23,7 +23,7 @@ int main(){
 		float log_float = resultado.log;
 		float error = abs((comp-log_float)/comp)*100;
 
-		csv_log <<resultado.adc_v<<","<<resultado.log<<"\n";
+		csv_log <<resultado.adc_v<<","<<resultado.log<<","<<comp<<"\n";
 		std::cout << "log("<<resultado.adc_v<<"): \t Resultado obtenido: "<< resultado.log << "\t esperado: " << comp << "\t %error: "<<error<<std::endl;
 		a=a+0.001;
 	}

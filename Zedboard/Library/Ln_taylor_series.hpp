@@ -6,7 +6,7 @@
 #include <math.h>
 #include <stdint.h>
 
- typedef ap_fixed<32,14,AP_RND,AP_SAT> log_precision;
+ typedef ap_fixed<18,5,AP_RND,AP_SAT> log_precision;
 
  template<typename T>
   struct data_vector{

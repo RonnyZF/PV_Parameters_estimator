@@ -44,7 +44,6 @@ template<typename T>
 
  template<typename P, typename T>
  int fixed_log_calculation(hls::stream<data_vector<T> > &in, hls::stream<log_data<T> > &out){
-
  	data_vector<T> sample_in;
  	log_data<T> sample_out;
 
